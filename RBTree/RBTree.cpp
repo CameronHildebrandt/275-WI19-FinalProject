@@ -63,13 +63,56 @@ RBNode* RBTree::find(RBNode* node) {
   return node;
 }
 
-bool RBTree::insert(int value) {
-  return false;
+RBNode* RBTree::insert(RBNode* root, RBNode* node) {
+  // insert the node
+  insertRecurse(root, node);
+
+  // satisfy the RB properties
+  fixTreeInsert(node);
+
+  // find the new root of the tree
+  root = node;
+  while (getParent(root) != NULL) {
+    root = getParent(root);
+  }
+
+  return root;
 }
 
-void insertRecurse(RBNode* root, RBNode* n) {
 
+void RBTree::insertRecurse(RBNode* root, RBNode* node) {
+  // Find a leaf node where the value should be inserted
+
+  // the node being inserted is less than the current node
+  if(root != NULL && node->value < root->value) {
+
+    if (root->left != NULL) {  // the left child isn't a leaf
+      insertRecurse(root->left, node);
+      return;
+    }
+    else {  // the left child is a leaf, so this is where to insert
+      root->left = node;
+    }
+  }
+
+  // the node being inserted is greater than the current node
+  else if(root != NULL) {
+    if (root->right != NULL) {  // the right child isn't a leaf
+      insertRecurse(root->right, node);
+      return;
+    }
+    else {  // the right child is a leaf, so this is where to insert
+      root->right = node;
+    }
+  }
+
+  // Insert the node
+  node->parent = root;
+  node->left = NULL; // this is a leaf
+  node->right = NULL;
+  node->colour = false; // false = red
 }
+
 
 bool RBTree::remove(int value) {
   return false;
@@ -165,8 +208,28 @@ bool RBTree::rLeft(RBNode* node) {
 }
 
 
-void RBTree::fixNode(RBNode* node) {
+void RBTree::fixTreeInsert(RBNode* root) {
+  /* Inputs: The root node of the tree
+   * Output: None
+   * This function validates and fixes the properties of the RBTree.
+   */
 
+  // Case 1 - Ensure root is black
+  if (parent(root) == NULL) {
+    insertCase1(root);
+  }
+  // Case 2 - Ensure
+  else if (parent(root)->color == BLACK) {
+    insertCase2(root);
+  }
+  // Case 3 - Ensure
+  else if (uncle(root) != NULL && uncle(root)->color == RED) {
+    insertCase3(root);
+  }
+  // Case 4 - Ensure
+  else {
+    insertCase4(root);
+  }
 }
 
 int main() {

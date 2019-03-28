@@ -11,8 +11,7 @@
 // Node structure declairation
 struct RBNode {
   int value;
-  bool black;
-  bool red;
+  bool colour; // true = black ; false = red
   RBNode* parent;
   RBNode* left;
   RBNode* right;
@@ -31,9 +30,9 @@ public:
 
   RBNode* find(RBNode* node);
 
-  bool insert(int value);
+  RBNode* insert(RBNode* root, RBNode* node);
 
-  void insertRecurse(RBNode* node);
+  void insertRecurse(RBNode* root, RBNode* node);
 
   bool remove(int value);
 
@@ -42,5 +41,5 @@ private:
 
   bool rLeft(RBNode* node);
 
-  void fixNode(RBNode* node);
+  void fixTree(RBNode* node);
 };
