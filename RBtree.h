@@ -6,40 +6,41 @@
 // --------------------------------------------------------
 
 #include <iostream>
+#include <assert.h>
 
-// Node structure
+// Node structure declairation
 struct RBNode {
   int value;
-  bool black = true;
-  bool red = false;
-  RBNode *grandparent;
-  RBNode *parent;
-  RBNode *uncle;
-  RBNode *left;
-  RBNode *right;
+  bool black;
+  bool red;
+  RBNode* parent;
+  RBNode* left;
+  RBNode* right;
 };
 
-// Tree structure
+// Tree structure declairation
 class RBTree {
 public:
-  RBNode getParent(RBNode node);
+  RBNode* getParent(RBNode* node);
 
-  RBNode getGrandparent(RBNode node);
+  RBNode* getGrandparent(RBNode* node);
 
-  RBNode getSibling(RBNode node);
+  RBNode* getSibling(RBNode* node);
 
-  RBNode getUncle(RBNode node);
+  RBNode* getUncle(RBNode* node);
 
-  RBNode find(RBNode node);
+  RBNode* find(RBNode* node);
 
   bool insert(int value);
 
-  bool delete(int value);
+  void insertRecurse(RBNode* node);
+
+  bool remove(int value);
 
 private:
-  bool rRight(int value);
+  bool rRight(RBNode* node);
 
-  bool rLeft(int value);
+  bool rLeft(RBNode* node);
 
-  void fixNode(RBNode node);
+  void fixNode(RBNode* node);
 };
