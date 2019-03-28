@@ -1,0 +1,101 @@
+--------------------------------------------------------
+| Name: Cameron Hildebrandt, 1584696
+| Name: Ramana Vasanthan, 1458497
+| CMPUT 275, Winter 2019
+| Final Project - Red-Black Tree Visualizer
+--------------------------------------------------------
+
+
+Included Files: NEEDS UPDATE
+ - server.cpp
+ - dijkstra.cpp
+ - dijkstra.h
+ - generate_graph.cpp
+ - generate_graph.h
+ - heap.cpp
+ - heap.h
+ - digraph.cpp
+ - digraph.h
+ - wdigraph
+ - edmonton-roads-2.0.1.txt
+ - Makefile
+
+
+Libraries Used: NEEDS UPDATE
+  - unordered_map
+  - unordered_set
+  - vector
+  - set
+  - iostream
+  - string
+  - fstream
+  - cmath
+  - list
+  - utility
+
+
+Assumptions: NEEDS UPDATE
+  - The user has some experience using Arduinos and understands the basics of
+    an Arduino board
+  - The user has a basic understanding of the command line.
+
+
+Program Functionality: NEEDS UPDATE
+  The program takes input from a client (which for this execise is stdin) and
+  computes the shortest path between the two specified coordinates using graph
+  information provided by saved file. It will then return the series of
+  coordinates corresponsing to waypoints between the two points.
+
+
+Running Instructions: NEEDS UPDATE
+  To compile this program, ensure you are in the correct directory and type
+  "make". This will ocmpile and link all of the necessary files for running
+  this program. To run the program, type "./server". The file expects the
+  following inputs  where "<\n>" represents the newline character:
+    - "R [point one latitude] [point one longditude]
+         [point two latitude] [point two longditude] <\n>" The two waypoints to
+                                                           find a path between
+
+    - "A <\n>" Ackowledge that the waypoint was reciecved
+
+
+  The program will output the series of waypoints to get between the two
+  points in the form:
+    - "N [number of waypoints] <\n>" The number of waypoints to be passed
+
+    - "W [latitude] [longditude] <\n>" N times (for each waypoint, waiting
+                                       for ack to send next).
+
+    - "E <\n>" Signifying the end of transmission
+
+
+Known Limitations: NEEDS UPDATE
+  - None.
+
+
+Additional Notes: NEEDS UPDATE
+  - The file heap.cpp was added for the implementation of heap to keep
+    consistent with the other files.
+    The purpose of this file is to reduce the likelihood of linking errors.
+
+  - The function readGraph (In our code called "read_city_graph_undirected")
+    has been abstracted into its own file due to its relatively large size
+    (alongside the closely related "manhattan" function) called
+    "generate_graph.cpp" and a "generate_graph.h" file was also created for
+    consistency.
+    The purpose of adding this file is because it contains a large function
+    that would have taken up a lot of room in the main file.
+
+  - The files "digraph.h, digraph.cpp, and wdigraph.cpp" are included so that
+    our functions and functions that are in the included files.
+    The purpose of these files is to avoid tainting the provided files
+    as much as possible and to keep the main file clean.
+
+
+  - The makefile target "generate_graph" was included so that the
+    generate_graph function could be compiled independently if necessay.
+
+
+References: NEEDS UPDATE
+  - Dijkstra's Algoritm - modified from the solution posted to eClass
+  - Assignment Two Files - few modifications, downloaded from eClass
