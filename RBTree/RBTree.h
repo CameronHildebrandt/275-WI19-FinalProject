@@ -5,8 +5,11 @@
 // | Final Project - Red-Black Tree Visualizer
 // --------------------------------------------------------
 
-#include <iostream>
+#ifndef _RBTREE_
+#define _RBTREE_
+
 #include <assert.h>
+#include <iostream>
 
 // Node structure declairation
 struct RBNode {
@@ -20,26 +23,46 @@ struct RBNode {
 // Tree structure declairation
 class RBTree {
 public:
+
+  // Tree interaction functions
+  RBNode* find(RBNode* node);                   //TODO
+  RBNode* insert(RBNode* root, RBNode* node);   //BUG - dies to seg fault
+  bool remove(int value);                       //TODO
+
+private:
+  // Functions for rotating about a node
+  bool rRight(RBNode* node);
+  bool rLeft(RBNode* node);
+
+  // Helper functions
   RBNode* getParent(RBNode* node);
-
   RBNode* getGrandparent(RBNode* node);
-
   RBNode* getSibling(RBNode* node);
-
   RBNode* getUncle(RBNode* node);
-
-  RBNode* find(RBNode* node);
-
-  RBNode* insert(RBNode* root, RBNode* node);
+  bool isLeaf(RBNode* node);
 
   void insertRecurse(RBNode* root, RBNode* node);
 
-  bool remove(int value);
+  // Functions for fixing tree upon node insertion
+  void insertCase1(RBNode* node); // Fixes insert case 1
+  // insertCase2 is trivial, so it doesn't need a function.
+  void insertCase3(RBNode* node); // Fixes insert case 3
+  void insertCase4(RBNode* node); // Rotates for insert case 4
+  void insertCase4Fix(RBNode* node); // Fixes insert case 4 (after rotation)
 
-private:
-  bool rRight(RBNode* node);
+  void fixTreeInsert(RBNode* node);
 
-  bool rLeft(RBNode* node);
+  // Functions for fixing tree upon node removal
+  void removeCase1(RBNode* node); // Fixes remove case 1
+  void removeCase2(RBNode* node); // Fixes remove case 2
+  void removeCase3(RBNode* node); // Fixes remove case 3
+  void removeCase4(RBNode* node); // Fixes remove case 4
+  void removeCase5(RBNode* node); // Fixes remove case 5
+  void removeCase6(RBNode* node); // Fixes remove case 6
 
-  void fixTree(RBNode* node);
+  void replaceNode(RBNode* node, RBNode* child);
+
+  void removeChild(RBNode* node); //BUG possibly errors here?
 };
+
+#endif
