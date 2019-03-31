@@ -102,8 +102,36 @@ void RBTree::insertRecurse(RBNode* root, RBNode* node) {
 
 
 // Tree interaction functions
-RBNode* RBTree::find(RBNode* node) {
-  return node;
+RBNode* RBTree::find(RBNode* root, int value) {
+  /* Inputs: value - The node to search for
+   *         root - the root of the tree
+   * Output: node || NULL - The node found, NULL if the node is not found.
+   * Walk down the tree, going left or right when appropriate. Eventually, you
+   * will either find the value or fall off of the tree.
+   */
+
+  RBNode* searchNode = root;
+  // RBNode* parent = root;
+
+	while(value != searchNode->value && searchNode != NULL) {
+		// parent = searchNode->parent;
+
+		if(value < searchNode->value) {
+			searchNode = searchNode->left;
+		}
+		else {
+			searchNode = searchNode->right;
+		}
+	}
+
+	if(searchNode == NULL) {
+		// key not found
+		return NULL;
+	}
+	else {
+		// key found
+		return searchNode;
+	}
 }
 
 RBNode* RBTree::insert(RBNode* root, RBNode* node) {

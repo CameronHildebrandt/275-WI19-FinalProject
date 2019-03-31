@@ -96,5 +96,13 @@ Additional Notes: NEEDS UPDATE
     generate_graph function could be compiled independently if necessay.
 
 
+Makefile Targets:
+  - make (all) - compiles and links all of the requred files for the RBTree
+                 executable.
+  - make clean - removes all of the pre-linked .o files, leaves the executable
+  - make call - ("clean all") removes the executeable file as well as the
+                pre-linked .o files.
+
+
 References: NEEDS UPDATE
   - Red Black Tree - https://en.wikipedia.org/wiki/Red–black_tree

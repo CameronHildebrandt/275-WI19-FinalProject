@@ -15,4 +15,7 @@ RBTree: RBTree.o RBTreeTest.o
 	$(CXX) $^ $(LFLAGS) $@
 
 clean:
+	@rm $(OBJS)
+
+call:
 	@rm $(OBJS) $(EXE)

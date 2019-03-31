@@ -51,7 +51,28 @@ int main() {
 
     else if(command == 'F' || command == 'f') {
       std::cin >> value;
+      RBNode* output;
+
+      // Use the tree's find function to find the node
+      output = tree.find(root, value);
+
+      if(output == NULL) {
+        std::cout << "Node not found.\n";
+      }
+
+      else {
+        std::cout << "Node found! This node is ";
+
+        // Output the node's colour
+        if(output->colour) {
+          std::cout << "black.\n";
+        }
+        else {
+          std::cout << "red.\n";
+        }
+      }
     }
+
 
     else if(command == 'S' || command == 's') {
       std::cout << "Stopping program...\n\n";

@@ -22,10 +22,13 @@ struct RBNode {
 
 // Tree structure declairation
 class RBTree {
+// You still need to add constructor//destructor
+
+
 public:
 
   // Tree interaction functions
-  RBNode* find(RBNode* node);                   //TODO
+  RBNode* find(RBNode* root, int value);     //TODO
   RBNode* insert(RBNode* root, RBNode* node);   //BUG - dies to seg fault
   bool remove(int value);                       //TODO
 
