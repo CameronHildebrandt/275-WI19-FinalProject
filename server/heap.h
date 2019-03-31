@@ -37,7 +37,6 @@ public:
   // returns the number of items held in the heap
   int size() const;
 
-private:
   // the array holding the heap
   vector< pair<T, K> > heap;
   // feel free to add appropriate private methods to help implement some functions

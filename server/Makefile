@@ -5,10 +5,12 @@ LFLAGS=
 all: heapsort
 heapsort: heapsort.o
 	$(CC) heapsort.o -o heapsort $(LFLAGS)
-binheap.o: heapsort.cpp heap.o
+heapsort.o: heapsort.cpp heap.o serialport.o
 	$(CC) heapsort.cpp -o heapsort.o $(CFLAGS)
 heap.o:
 	$(CC) heap.h -o heap.o $(CFLAGS)
+serialport.o:
+	$(CC) serialport.h -o serialport.o $(CFLAGS)
 
 clean:
-	rm heapsort heapsort.o heap.o
+	rm heapsort heapsort.o heap.o serialport.o
