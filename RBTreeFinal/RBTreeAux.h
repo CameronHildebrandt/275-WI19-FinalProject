@@ -1,3 +1,10 @@
+// --------------------------------------------------------
+// | Name: Cameron Hildebrandt, 1584696
+// | Name: Ramana Vasanthan, 1458497
+// | CMPUT 275, Winter 2019
+// | Final Project - Red-Black Tree Visualizer
+// --------------------------------------------------------
+
 #ifndef _RBTREE_AUX_H_
 #define _RBTREE_AUX_H_
 
@@ -90,6 +97,14 @@ public:
 
   T& item(){
     return this->node->item;
+  }
+
+  const bool& colour() const {
+    return this->node->colour;
+  }
+
+  bool& colour(){
+    return this->node->colour;
   }
 
   // prefix operator: ++iter

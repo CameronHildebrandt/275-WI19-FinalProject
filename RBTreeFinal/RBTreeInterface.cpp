@@ -1,11 +1,9 @@
-/*
-  Test program for exercise 7.
-
-  Tests various public methods for RBTree including the new method countLessThan().
-
-  Currently does not compile because the countLessThan() method is not yet implemented.
-  That is your job.
-*/
+// --------------------------------------------------------
+// | Name: Cameron Hildebrandt, 1584696
+// | Name: Ramana Vasanthan, 1458497
+// | CMPUT 275, Winter 2019
+// | Final Project - Red-Black Tree Visualizer
+// --------------------------------------------------------
 
 #include <iostream>
 #include <string>
@@ -13,7 +11,7 @@
 
 void printTree(const RBTree<int, string>& tree) {
   for (RBIterator<int, string> iter = tree.begin(); iter != tree.end(); ++iter) {
-    cout << " - " << iter.key() << ' ' << iter.item() << endl;
+    cout << " - " << iter.key() << ' ' << iter.item() << ' ' << iter.colour() << endl;
   }
 }
 
@@ -21,12 +19,12 @@ int main() {
   RBTree<int, string> tree;
 
   cout << "Possible Commands:" << endl;
-  cout << "S - print the size of the map" << endl;
-  cout << "I <value> <word> - update the word for the value" << endl;
+  cout << "I <value> - insert a value" << endl;
   cout << "F <value> - check if the value is in the tree" << endl;
   cout << "R <value> - remove the entry with the given value" << endl;
-  cout << "P - print all entries in the tree, ordered by key" << endl;
-  cout << "Q - stop" << endl;
+  cout << "S         - print the size of the map" << endl;
+  cout << "P         - print all entries in the tree, ordered by key" << endl;
+  cout << "Q         - stop" << endl;
   cout << endl;
 
   while (true) {

@@ -1,3 +1,10 @@
+// --------------------------------------------------------
+// | Name: Cameron Hildebrandt, 1584696
+// | Name: Ramana Vasanthan, 1458497
+// | CMPUT 275, Winter 2019
+// | Final Project - Red-Black Tree Visualizer
+// --------------------------------------------------------
+
 #ifndef _RBTREE_H_
 #define _RBTREE_H_
 
@@ -137,7 +144,6 @@ private:
 };
 
 // ***** IMPLEMENTATION STARTS HERE *****
-
 // ***** PUBLIC METHODS FIRST *****
 
 template <typename K, typename T>
@@ -186,12 +192,14 @@ void RBTree<K,T>::update(const K& key, const T& item) {
 		++RBSize;
 
 		// now fix the AVL property up the tree
-		fixUp(newNode);
+		fixTreeInsert(newNode);
 	}
+
 	else {
 		// the key existed, so just update the item
 		node->item = item;
 	}
+
 }
 
 template <typename K, typename T>
@@ -217,6 +225,8 @@ void RBTree<K,T>::remove(const K& key) {
 
 	RBNode<K,T> *pluckParent = pluck->parent;
 
+	//removeChild(pluck->parent);
+
 	// this function will delete a node with no left child and
 	// restructure the tree
 	pluckNode(pluck);
@@ -224,6 +234,7 @@ void RBTree<K,T>::remove(const K& key) {
 	// now fix the AVL tree up starting from the parent
 	// of the recently-deleted node
 	fixUp(pluckParent);
+
 }
 
 template <typename K, typename T>
@@ -544,9 +555,9 @@ void RBTree<K,T>::insertCase3(RBNode<K,T>* node) {
    */
 
   // Reassign the respective colours
-  getParent(node)->colour = BLACK; //true == black
-  getUncle(node)->colour = BLACK; //true == black
-  getGrandparent(node)->colour = RED; //false == red
+  getParent(node)->colour = BLACK;
+  getUncle(node)->colour = BLACK;
+  getGrandparent(node)->colour = RED;
 
   // Changing the grandparent node could have caused violations, so recurse
   // to fix
@@ -565,13 +576,13 @@ void RBTree<K,T>::insertCase4(RBNode<K,T>* node) {
 
   // The tree needs to be rotated left if it is a right child
   if (node == parent->right && parent == grandparent->left) {
-    rLeft(parent);
+    rotateLeft(parent);
     node = node->left;
   }
 
   // The tree needs to be rotated right if it is a left child
   else if (node == parent->left && parent == grandparent->right) {
-    rRight(parent);
+    rotateRight(parent);
     node = node->right;
   }
   // std::cout << "iCase4Breakpoint2\n";
@@ -595,12 +606,12 @@ void RBTree<K,T>::insertCase4Fix(RBNode<K,T>* node) {
 
   // If the node is a left child, you have to rotate right
   if (node == parent->left) {
-    // std::cout << "rRightBreakpoint\n";
-    rRight(grandparent);
+    // std::cout << "rotateRightBreakpoint\n";
+    rotateRight(grandparent);
   }
   else {
     // std::cout << "rLeftBreakpoint\n";
-    rLeft(grandparent);
+    rotateLeft(grandparent);
   }
 
   // std::cout << "iCase4Breakpoint6\n";
@@ -673,10 +684,10 @@ void RBTree<K,T>::removeCase2(RBNode<K,T>* node) {
     sibling->colour = BLACK; //true == black
 
     if (node == node->parent->left) {
-      rLeft(node->parent);
+      rotateLeft(node->parent);
     }
     else {
-      rRight(node->parent);
+      rotateRight(node->parent);
     }
   }
   removeCase3(node);
@@ -747,14 +758,14 @@ void RBTree<K,T>::removeCase5(RBNode<K,T>* node) {
        (sibling->left->colour == RED)) { // this test is trivial due to cases 2-4
       sibling->colour = RED;
       sibling->left->colour = BLACK;
-      rRight(sibling);
+      rotateRight(sibling);
     }
     else if((node == node->parent->right)      &&
             (sibling->left->colour == BLACK)    &&
             (sibling->right->colour == RED)) { // this test is trivial due to cases 2-4
       sibling->colour = RED;
       sibling->right->colour = BLACK;
-      rLeft(sibling);
+      rotateLeft(sibling);
     }
   }
   removeCase6(node);
@@ -775,11 +786,11 @@ void RBTree<K,T>::removeCase6(RBNode<K,T>* node) {
 
   if(node == node->parent->left) {
     sibling->right->colour = BLACK; //true == black
-    rLeft(node->parent);
+    rotateLeft(node->parent);
   }
   else {
     sibling->left->colour = BLACK; //true == black
-    rRight(node->parent);
+    rotateRight(node->parent);
   }
 }
 
@@ -841,14 +852,14 @@ void RBTree<K,T>::removeChild(RBNode<K,T>* node) {
 
 template <typename K, typename T>
 void RBTree<K,T>::checkStructure() const {
-	if (root == NULL) {
-		assert(RBSize == 0);
-	}
-	else {
-		assert(root->parent == NULL);
-		unsigned int checkSize = checkStructureRecursive(root, NULL, NULL, NULL);
-		assert(checkSize == RBSize);
-	}
+	// if (root == NULL) {
+	// 	assert(RBSize == 0);
+	// }
+	// else {
+	// 	assert(root->parent == NULL);
+	// 	unsigned int checkSize = checkStructureRecursive(root, NULL, NULL, NULL);
+	// 	assert(checkSize == RBSize);
+	// }
 }
 
 // Recursively:
@@ -869,30 +880,31 @@ unsigned int RBTree<K,T>::checkStructureRecursive(RBNode<K,T> *node,
 	//   So if node->key and some key in a node above "node" violate the BST
 	//   but no violation has been detected so far earlier in the recursion
 	//   then it node->key would violate the BST property with one of ub or lb
-	if (lb != NULL) {
-		assert(lb->key < node->key);
-	}
-	if (ub != NULL) {
-		assert(node->key < ub->key);
-	}
 
-	// the following recursively checks
-	if (node->left) {
-		assert(node->left->parent == node);
-		// replace ub with "node" in the recursive check as we went left
-		cnt += checkStructureRecursive(node->left, node, lb, node);
-	}
-	if (node->right) {
-		assert(node->right->parent == node);
-		// replace lb with "node" in the recursive check as we went right
-		cnt += checkStructureRecursive(node->right, node, node, ub);
-	}
-
-	// now check the heights and the AVL property
-	int lh, rh;
-	node->childHeights(lh, rh);
-	assert(node->height == 1+max(lh, rh));
-	assert(abs(lh-rh) <= 1);
+	// if (lb != NULL) {
+	// 	assert(lb->key < node->key);
+	// }
+	// if (ub != NULL) {
+	// 	assert(node->key < ub->key);
+	// }
+	//
+	// // the following recursively checks
+	// if (node->left) {
+	// 	assert(node->left->parent == node);
+	// 	// replace ub with "node" in the recursive check as we went left
+	// 	cnt += checkStructureRecursive(node->left, node, lb, node);
+	// }
+	// if (node->right) {
+	// 	assert(node->right->parent == node);
+	// 	// replace lb with "node" in the recursive check as we went right
+	// 	cnt += checkStructureRecursive(node->right, node, node, ub);
+	// }
+	//
+	// // now check the heights and the AVL property
+	// int lh, rh;
+	// node->childHeights(lh, rh);
+	// assert(node->height == 1+max(lh, rh));
+	// assert(abs(lh-rh) <= 1);
 
 	return cnt;
 }

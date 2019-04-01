@@ -1,15 +1,15 @@
 # --------------------------------------------------------
-# | Name: Cameron Hildebrandt
-# | ID: 1584696
+# | Name: Cameron Hildebrandt, 1584696
+# | Name: Ramana Vasanthan, 1458497
 # | CMPUT 275, Winter 2019
-# | Weekly Exercise #7 - AVL Trees
+# | Final Project - Red-Black Tree Visualizer
 # --------------------------------------------------------
 
 CXX=g++
 CFLAGS=-c -Wall -O2 -std=c++11
 LFLAGS=-o
-PROGS=ex7test.cpp RBTreeAux.h RBTree.h
-OBJS=ex7test.o
+PROGS=RBTreeInterface.cpp RBTreeAux.h RBTree.h
+OBJS=RBTreeInterface.o
 EXE=RBTree
 
 # Executable targets
@@ -18,7 +18,7 @@ all: $(EXE)
 %.o: %.cpp
 	$(CXX) $^ $(CFLAGS)
 
-RBTree: ex7test.o
+RBTree: RBTreeInterface.o
 	$(CXX) $^ $(LFLAGS) $@
 
 clean:
