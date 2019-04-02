@@ -16,7 +16,7 @@
 SerialPort Serial("/dev/ttyACM0");
 
 
-void serialPrintTree(vector<int> vec, int size) {
+void serialPrintTree(vector<pair<int,int>> vec, int size) {
   cout << "hello" << endl;
   string mode;
   string temp;
@@ -30,7 +30,9 @@ void serialPrintTree(vector<int> vec, int size) {
   for (int i = 0; i < size; i++) {
     temp.clear();
     temp.insert(0, "E ");
-    temp.insert(2, to_string(vec[i]));
+    temp.insert(2, to_string(vec[i].first));
+    temp.insert(temp.size()," ");
+    temp.insert(temp.size(),to_string(vec[i].second));
     temp.insert(temp.size(), "\n");
 //    cout << temp << endl;
     do {
@@ -48,19 +50,20 @@ void serialPrintTree(vector<int> vec, int size) {
 
 void printTree(const RBTree<int, int>& tree) {
   int index=0;
-  vector<int> temp;
+  vector<pair<int,int>> temp;
   for (int i=0; i<50; i++) {
-    temp.push_back(0);
+    temp.push_back(make_pair(0,0));
   }
   for (RBIterator<int, int> iter = tree.root; iter != tree.end(); ++iter) {
     if (iter==tree.root) {
-      temp.insert(temp.begin(), iter.item());
+      temp.insert(temp.begin(), make_pair(iter.item(), iter.colour()));
     }
     else {
       RBNode<int,int> *parent= iter.node->parent;
       int parentitem=parent->item;
+      int parentcolour=parent->colour;
       cout<<parentitem;
-      vector<int>::iterator position=find(temp.begin(),temp.end(), parentitem);
+      vector<pair<int,int>>::iterator position=find(temp.begin(),temp.end(), make_pair(parentitem, parentcolour));
       if (iter==parent->left) {
         index=distance(temp.begin(), position)*2+1;
       }
@@ -68,13 +71,13 @@ void printTree(const RBTree<int, int>& tree) {
       if (iter==parent->right) {
         index=distance(temp.begin(), position)*2+2;
       }
-      temp[index]=iter.item();
+      temp[index]=make_pair(iter.item(),iter.colour());
     }
     if (!iter.node->left) {
-      temp[index*2+1]=0;
+      temp[index*2+1]=make_pair(0,0);
     }
     if (!iter.node->right) {
-      temp[index*2+2]=0;
+      temp[index*2+2]=make_pair(0,0);
     }
     cout << " - " << iter.key() << ' ' << iter.item() << ' ' << iter.colour() << endl;
   }

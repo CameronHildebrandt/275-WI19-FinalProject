@@ -37,6 +37,7 @@ uint16_t buf_len = 0;
 // input buffer
 char* buffer = (char *) malloc(buf_size);
 int array[1000];
+int colour[1000];
 int size=0;
 int index=0;
 
@@ -94,10 +95,15 @@ void printtree(int* formatted, int n) {
                 if (formatted[2 * i + 2] != 0) {
                     tft.drawLine(xcoord + 10, ycoord, xcoord + 20, ycoord + 30, ILI9341_BLACK);
                 }
-                tft.fillCircle(xcoord, ycoord, 12, ILI9341_RED);
+                if (colour[i]==0) {
+                    tft.fillCircle(xcoord, ycoord, 12, ILI9341_RED);
+                }
+                else {
+                    tft.fillCircle(xcoord,ycoord, 12, ILI9341_BLACK);
+                }
                 tft.setCursor(xcoord - 2, ycoord - 5);
                 tft.setTextSize(1);
-                tft.setTextColor(ILI9341_BLACK);
+                tft.setTextColor(ILI9341_WHITE);
                 tft.print(formatted[i]);
             }
         }
@@ -131,6 +137,8 @@ void process_line() {
             array[index]=array[index]*10+buffer[i]-48;
             i++;
         }
+        i++;
+        colour[index]=buffer[i];
         index++;
         Serial.flush();
         Serial.println('A');
