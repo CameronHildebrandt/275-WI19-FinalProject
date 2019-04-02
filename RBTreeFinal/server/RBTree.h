@@ -68,9 +68,10 @@ public:
 	// and has the correct node count)
 	// Takes O(n) time.
 	void checkStructure() const;
+	RBNode<K,T> *root;
 
 private:
-	RBNode<K,T> *root;
+
 	unsigned int RBSize;
 
 	// returns a pointer to the node containing the key,
@@ -84,11 +85,11 @@ private:
 
 	// fix the AVL property at this node and, recursively, all
 	// nodes above it
-	void fixUp(RBNode<K,T>* node);
+//	void fixUp(RBNode<K,T>* node);
 
 	// recalculate the height of the node, assuming its children's heights
 	// are correct
-	void recalcHeight(RBNode<K,T>* node);
+//	void recalcHeight(RBNode<K,T>* node);
 
 	// left and right rotations, return a pointer to the new root
 	// of the subtree after the rotation, assumes the corresponding
@@ -208,8 +209,11 @@ void RBTree<K,T>::remove(const K& key) {
 
 	// make sure the key is in the tree
 	// we only assume < is implemented for the key type, not necessarily ==
-	assert(node != NULL && !(node->key < key || key < node->key));
-
+//	assert(node != NULL && !(node->key < key || key < node->key));
+	if(node == NULL && !(node->key < key || key < node->key)) {
+		cout << "rip search" << endl;
+		return;
+	}
 	// find the maximum-key node in the left subtree of the node to remove
 	RBNode<K,T> *tmp = node->left, *pluck = node;
 	while (tmp != NULL) {
@@ -223,9 +227,10 @@ void RBTree<K,T>::remove(const K& key) {
 	node->key = pluck->key;
 	node->item = pluck->item;
 
-	RBNode<K,T> *pluckParent = pluck->parent;
+//	RBNode<K,T> *pluckParent = pluck->parent;
 
 	//removeChild(pluck->parent);
+	cout<<"breakpoint0\n";
 
 	// this function will delete a node with no left child and
 	// restructure the tree
@@ -233,7 +238,7 @@ void RBTree<K,T>::remove(const K& key) {
 
 	// now fix the AVL tree up starting from the parent
 	// of the recently-deleted node
-	fixUp(pluckParent);
+//	fixUp(pluckParent);
 
 }
 
@@ -316,7 +321,7 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 
 	// first find the only child (if any) of "node"
 	RBNode<K,T> *child;
-	if (node->left) {
+	if(node->left) {
 		child = node->left;
 		// make sure the node does not have two children
 		assert(child->right == NULL);
@@ -344,6 +349,16 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 		child->parent = node->parent;
 	}
 
+	// Fix the RB properties
+	// If the node is black and the child is red, paint the child black
+	if (node->colour == BLACK) {
+		if (child->colour == RED) {
+			child->colour = BLACK;
+		}
+		else
+			removeCase1(child);
+	}
+
 	// ensures ~RBNode() does not recursively delete other parts of the tree
 	node->left = node->right = NULL;
 
@@ -352,57 +367,57 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 	--RBSize;
 }
 
-template <typename K, typename T>
-void RBTree<K,T>::fixUp(RBNode<K,T> *node) {
-	// keep climbing up the tree until we are past the root
-	while (node != NULL) {
-		// first make sure the height of node is correctly computed
-		node->recalcHeight();
-
-		// now compare the heights of the children
-		int lh, rh;
-		node->childHeights(lh, rh);
-
-		// should never differ by more than 2, otherwise
-		// there was a bug in the code
-		assert(abs(lh-rh) <= 2);
-
-		// if there is a violation of the AVL property, perform the
-		// appropriate rotation(s)
-		// see eClass notes for the different rules for applying rotations
-		if (lh == rh+2) {
-			// left child is higher
-
-			RBNode<K,T>* lchild = node->left;
-			int llh, lrh;
-			lchild->childHeights(llh, lrh);
-
-			if (llh < lrh) {
-				rotateLeft(lchild);
-			}
-			node = rotateRight(node);
-		}
-		else if (lh+2 == rh) {
-			// right child is higher
-
-			RBNode<K,T>* rchild = node->right;
-			int rlh, rrh;
-			rchild->childHeights(rlh, rrh);
-
-			if (rlh > rrh) {
-				rotateRight(rchild);
-			}
-			node = rotateLeft(node);
-		}
-
-		// whether we rotated or not, "node" is now the
-		// root of the subtree we were checking
-
-
-		// crawl up the tree one step
-		node = node->parent;
-	}
-}
+//template <typename K, typename T>
+//void RBTree<K,T>::fixUp(RBNode<K,T> *node) {
+//	// keep climbing up the tree until we are past the root
+//	while (node != NULL) {
+//		// first make sure the height of node is correctly computed
+//		node->recalcHeight();
+//
+//		// now compare the heights of the children
+//		int lh, rh;
+//		node->childHeights(lh, rh);
+//
+//		// should never differ by more than 2, otherwise
+//		// there was a bug in the code
+//		assert(abs(lh-rh) <= 2);
+//
+//		// if there is a violation of the AVL property, perform the
+//		// appropriate rotation(s)
+//		// see eClass notes for the different rules for applying rotations
+//		if (lh == rh+2) {
+//			// left child is higher
+//
+//			RBNode<K,T>* lchild = node->left;
+//			int llh, lrh;
+//			lchild->childHeights(llh, lrh);
+//
+//			if (llh < lrh) {
+//				rotateLeft(lchild);
+//			}
+//			node = rotateRight(node);
+//		}
+//		else if (lh+2 == rh) {
+//			// right child is higher
+//
+//			RBNode<K,T>* rchild = node->right;
+//			int rlh, rrh;
+//			rchild->childHeights(rlh, rrh);
+//
+//			if (rlh > rrh) {
+//				rotateRight(rchild);
+//			}
+//			node = rotateLeft(node);
+//		}
+//
+//		// whether we rotated or not, "node" is now the
+//		// root of the subtree we were checking
+//
+//
+//		// crawl up the tree one step
+//		node = node->parent;
+//	}
+//}
 
 template <typename K, typename T>
 RBNode<K,T>* RBTree<K,T>::rotateRight(RBNode<K,T>* node) {
@@ -433,8 +448,8 @@ RBNode<K,T>* RBTree<K,T>::rotateRight(RBNode<K,T>* node) {
 	node->left = lchild->right;
 	lchild->right = node;
 
-	node->recalcHeight();
-	lchild->recalcHeight();
+//	node->recalcHeight();
+//	lchild->recalcHeight();
 
 	return lchild;
 }
@@ -469,8 +484,8 @@ RBNode<K,T>* RBTree<K,T>::rotateLeft(RBNode<K,T>* node) {
 	node->right = rchild->left;
 	rchild->left = node;
 
-	node->recalcHeight();
-	rchild->recalcHeight();
+//	node->recalcHeight();
+//	rchild->recalcHeight();
 
 	return rchild;
 }
@@ -843,8 +858,15 @@ void RBTree<K,T>::removeChild(RBNode<K,T>* node) {
     removeCase1(child);
   }
 
-  // Remove node from memory
-  free(node);
+	// ensures ~RBNode() does not recursively delete other parts of the tree
+	node->left = node->right = NULL;
+
+	// the node is now gone!
+	delete node;
+	--RBSize;
+
+//  // Remove node from memory
+//  free(node);
 }
 
 

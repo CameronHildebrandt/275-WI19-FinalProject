@@ -20,7 +20,7 @@ Everything is private, only RBTree abd RBIterator have access.
 */
 template <typename K, typename T>
 class RBNode {
-private:
+public:
   RBNode(const K& key, const T& item,
     RBNode<K,T>* left, RBNode<K,T>* right, RBNode<K,T>* parent, bool colour) {
       this->key = key;
@@ -29,7 +29,7 @@ private:
       this->left = left;
       this->right = right;
       this->parent = parent;
-      recalcHeight();
+//      recalcHeight();
   }
 
   // recursively delete the left and right subtree, if they exist
@@ -43,29 +43,29 @@ private:
   }
 
   // recalculate the height of this node
-  // assumes the heights of the children are correct
-  void recalcHeight() {
-    int lh, rh;
-    childHeights(lh, rh);
-    height = 1+std::max(lh, rh);
-  }
-
-  // get the heights of the children
-  void childHeights(int& lh, int& rh) {
-    lh = rh = -1;
-    if (left) {
-      lh = left->height;
-    }
-    if (right) {
-      rh = right->height;
-    }
-  }
+//  // assumes the heights of the children are correct
+//  void recalcHeight() {
+//    int lh, rh;
+//    childHeights(lh, rh);
+//    height = 1+std::max(lh, rh);
+//  }
+//
+//  // get the heights of the children
+//  void childHeights(int& lh, int& rh) {
+//    lh = rh = -1;
+//    if (left) {
+//      lh = left->height;
+//    }
+//    if (right) {
+//      rh = right->height;
+//    }
+//  }
 
   K key;
   T item;
   bool colour;
   RBNode<K,T> *left, *right, *parent;
-  int height;
+//  int height;
 
   // give access to the AVL map class itself and its iterators
   friend class RBTree<K,T>;
@@ -129,16 +129,19 @@ public:
     return node != rhs.node;
   }
 
-private:
-  RBIterator(RBNode<K,T> *root) {
-    this->node = root;
-    if (node != NULL) {
-      // if the root of the tree is not empty, go to leftmost node
-      while (this->node->left) {
-        this->node = node->left;
+    RBIterator(RBNode<K,T> *root) {
+      this->node = root;
+      if (node != NULL) {
+        // if the root of the tree is not empty, go to leftmost node
+        while (this->node->left) {
+          this->node = node->left;
+        }
       }
     }
-  }
+    RBNode<K,T> *node;
+
+private:
+
 
   void advance() {
     assert(node != NULL);
@@ -159,7 +162,7 @@ private:
     }
   }
 
-  RBNode<K,T> *node;
+
 
   // needed so RBTree can access the constructor
   friend class RBTree<K,T>;
