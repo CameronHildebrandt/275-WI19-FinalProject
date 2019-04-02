@@ -33,123 +33,108 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 const uint16_t buf_size = 256;
 // current number of chars in buffer, not counting null terminator
 uint16_t buf_len = 0;
-
+bool numcheck=false;
 // input buffer
 char* buffer = (char *) malloc(buf_size);
-int array[1000];
-int colour[1000];
+//int array[1000];
+//int colour[1000];
 int size=0;
 int index=0;
+int level=0;
+int horizontal=0;
+int num=0;
+bool colour=0;
+void printtree() {
 
-void swapnums(int* x,int* y) {
-    int temp=*x;
-    *x=*y;
-    *y=temp;
-}
-void binheaparray(int* tree, int n, int i) {
-    int largest=i;
-    int left=2*i+1;
-    int right=2*i+2;
-    if (left<n and tree[left]>tree[largest]) {
-        largest=left;
-    }
-    if (right<n and tree[right]>tree[largest]) {
-        largest=right;
-    }
-    if (largest!=i) {
-        swapnums(&tree[i], &tree[largest]);
-        binheaparray(tree,n,largest);
-    }
-}
-void heapSort(int* tree, int n) {
-    for (int i=n/2-1; i>=0; i--) {
-        binheaparray(tree, n, i);
-    }
-    for (int i=n-1; i>=0; i--) {
-        swapnums(&tree[0],&tree[i]);
-        binheaparray(tree,i,0);
-    }
-}
-void printtree(int* formatted, int n) {
-    tft.fillScreen(ILI9341_WHITE);
-    int level=-1;
-    int max=-1;
-    int prevmax=-3;
     int xcoord,ycoord=0;
-    for (int i=0; i<n; i++) {
-        if (i>max) {
-            prevmax=max;
-            level++;
-            max=max*2+2;
-            ycoord=level*40+40;
-        }
-        int temp= pow(2,level+1);
-        xcoord=abs((i-prevmax)%(temp))*(DISPLAY_WIDTH/(pow(2,level)+1));
-        if (formatted[i]!=0) {
-            if (2 * i + 1 < n) {
-                if (formatted[2 * i + 1] != 0) {
-                    tft.drawLine(xcoord - 10, ycoord, xcoord - 20, ycoord + 30, ILI9341_BLACK);
-                }
-            }
-            if (2 * i + 2 < n) {
-                if (formatted[2 * i + 2] != 0) {
-                    tft.drawLine(xcoord + 10, ycoord, xcoord + 20, ycoord + 30, ILI9341_BLACK);
-                }
-                if (colour[i]==0) {
-                    tft.fillCircle(xcoord, ycoord, 12, ILI9341_RED);
-                }
-                else {
-                    tft.fillCircle(xcoord,ycoord, 12, ILI9341_BLACK);
-                }
-                tft.setCursor(xcoord - 2, ycoord - 5);
-                tft.setTextSize(1);
-                tft.setTextColor(ILI9341_WHITE);
-                tft.print(formatted[i]);
-            }
-        }
+
+    ycoord=level+1*40;
+    int temp= pow(2,level+1);
+    xcoord=(horizontal)*(DISPLAY_WIDTH/(pow(2,level)+1));
+    if (colour) {
+        tft.fillCircle(xcoord, ycoord, 12, ILI9341_RED);
     }
+    else {
+        tft.fillCircle(xcoord,ycoord, 12, ILI9341_BLACK);
+    }
+    tft.setCursor(xcoord - 2, ycoord - 5);
+    tft.setTextSize(1);
+    tft.setTextColor(ILI9341_WHITE);
+    tft.print(num);
+//
+//        if (formatted[i]!=0) {
+//            if (2 * i + 1 < n) {
+//                if (formatted[2 * i + 1] != 0) {
+//                    tft.drawLine(xcoord - 10, ycoord, xcoord - 20, ycoord + 30, ILI9341_BLACK);
+//                }
+//            }
+//            if (2 * i + 2 < n) {
+//                if (formatted[2 * i + 2] != 0) {
+//                    tft.drawLine(xcoord + 10, ycoord, xcoord + 20, ycoord + 30, ILI9341_BLACK);
+//                }
+//                if (colour[i]==0) {
+//                    tft.fillCircle(xcoord, ycoord, 12, ILI9341_RED);
+//                }
+//                else {
+//                    tft.fillCircle(xcoord,ycoord, 12, ILI9341_BLACK);
+//                }
+//                tft.setCursor(xcoord - 2, ycoord - 5);
+//                tft.setTextSize(1);
+//                tft.setTextColor(ILI9341_WHITE);
+//                tft.print(formatted[i]);
+//            }
+//        }
+//    }
 }
 
 void process_line() {
-    if (buffer[0]=='N') {
 
-        index=0;
-        int i=2;
-        size=0;
-        size=size*10+buffer[i]-48;
-        i++;
-        while (buffer[i]>=48 and buffer[i]<=57) {
-            size=size*10+buffer[i]-48;
-            i++;
+    if (buffer[0]>=48 and buffer[0]<=57) {
+        if (numcheck) {
+            numcheck=false;
+            if (buffer[0]==49) {
+                colour=true;
+            }
+            if (buffer[0]==48) {
+                colour=false;
+            }
+            tft.setCursor(0,0);
+            tft.setTextSize(2);
+            tft.setTextColor(ILI9341_BLACK);
+            tft.print("hello");
+            printtree();
+            level++;
+            buf_len = 0;
+            buffer[buf_len] = 0;
+            Serial.println('A');
+            level++;
+
         }
-        Serial.println('A');
-        buf_len = 0;
-        buffer[buf_len] = 0;
-    }
-    if (buffer[0]=='E') {
-        int i=2;
+        else {
+            int i = 0;
+            while (buffer[i] >= 48 and buffer[i] <= 57) {
+                num = num * 10 + buffer[i] - 48;
+                i++;
+            }
 
-        array[index]=0;
-        array[index]=array[index]*10+buffer[i]-48;
-        i++;
-
-        while (buffer[i]>=48 and buffer[i]<=57) {
-            array[index]=array[index]*10+buffer[i]-48;
-            i++;
+            buf_len = 0;
+            buffer[buf_len] = 0;
+            Serial.println('A');
         }
-        i++;
-        colour[index]=buffer[i]-48;
-        index++;
-        Serial.flush();
-        Serial.println('A');
-        buf_len = 0;
-        buffer[buf_len] = 0;
     }
-    if (buffer[0]=='X') {
-        printtree(array,size);
-        Serial.println('A');
+    if (buffer[0]=='R') {
+        horizontal++;
+
         buf_len = 0;
         buffer[buf_len] = 0;
+        Serial.println('A');
+    }
+    if (buffer[0]=='U') {
+        level--;
+
+        buf_len = 0;
+        buffer[buf_len] = 0;
+        Serial.println('A');
 //        int a,b;
 //        a=micros();
 //        heapSort(array,size);

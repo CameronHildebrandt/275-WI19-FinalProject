@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string>
 #include "RBTree.h"
+#include "serialport.cpp"
+#include "serialport.h"
 
 // void printTree(const RBTree<int, string>& tree) {
 //   for (RBIterator<int, string> iter = tree.begin(); iter != tree.end(); ++iter) {
@@ -15,9 +17,27 @@
 //   }
 // }
 
+SerialPort Serial("/dev/ttyACM0");
+
 int main() {
   RBTree<int, string> tree;
+  string temp;
 
+  // Initialize the variables
+  string nextPhase = "PHASE01\n";
+  string line;
+  do {
+    line = Serial.readline();
+  } while (line != nextPhase);
+  cout<<"Link established"<<endl;
+  // switch to next phase
+  while(true) {
+    Serial.writeline("x");
+    if (Serial.readline()=="thanks\n") {
+      break;
+    }
+  }
+  string out;
   cout << "Possible Commands:" << endl;
   cout << "I <value> - insert a value" << endl;
   cout << "F <value> - check if the value is in the tree" << endl;
@@ -69,7 +89,17 @@ int main() {
     case 'P':
       //cout << "printing" << endl;
       // printTree(tree);
-      tree.treePrint();
+
+      out.clear();
+      temp=tree.treePrint();
+      cout<<temp<<endl;
+      for (auto x: temp) {
+        out+=x;
+        out+="\n";
+        do {
+          Serial.writeline(out);
+        } while(Serial.readline()!="A\n");
+      }
       break;
 
     case 'Q':

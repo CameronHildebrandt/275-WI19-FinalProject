@@ -12,10 +12,13 @@
 #include <iostream>
 #include <cstdlib>
 #include "RBTreeAux.h"
+#include <string>
 
 using namespace std;
-
+string keep;
 enum Colour {RED, BLACK};
+
+
 
 /*
   An associative container (map/dict) using an AVL tree.
@@ -69,7 +72,7 @@ public:
 	// Takes O(n) time.
 	void checkStructure() const;
 
-	void treePrint();
+	string treePrint();
 
 private:
 	RBNode<K,T> *root;
@@ -311,22 +314,32 @@ RBNode<K,T>* RBTree<K,T>::findNode(const K& key) const {
 template <typename K, typename T>
 void RBTree<K,T>::treeRecurse(RBNode<K,T>* node) {
 	// Output the value of this node before recursing
-	cout << node->key << ',' << node->colour << ' ';
+
+//	cout << node->key << ',' << node->colour << ' ';
+	keep+=node->key+48;
+	keep +=" ";
+
+	keep+= node->colour+48;
+	keep+=" ";
+//	cout<<keep<<endl;
 
 
 	// Recurse down the left of the tree first, then work our way right.
 	if(node->left != NULL) {
 		treeRecurse(node->left);
 	}
-	cout << "R ";
+	keep+="R ";
+//	cout << "R ";
 	if(node->right != NULL) {
 		treeRecurse(node->right);
 	}
-	cout << "U ";
+	keep +="U ";
+//	cout << "U ";
 }
 
 template <typename K, typename T>
-void RBTree<K,T>::treePrint() {
+string RBTree<K,T>::treePrint() {
+	keep.clear();
 	RBNode<K,T> *root = this->root;
 	// Traverse down the tree, going left and right as appropriate,
 	// until a leaf is found, print up recursively.
@@ -339,7 +352,8 @@ void RBTree<K,T>::treePrint() {
 	if(root != NULL) {
 		treeRecurse(root);
 	}
-	cout << endl;
+//	cout << endl;
+	return keep;
 
 	// while (node != NULL && node->key != key) {
 	// 	parent = node;
