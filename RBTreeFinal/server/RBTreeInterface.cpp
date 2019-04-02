@@ -90,15 +90,21 @@ int main() {
       //cout << "printing" << endl;
       // printTree(tree);
 
-      out.clear();
+
       temp=tree.treePrint();
       cout<<temp<<endl;
       for (auto x: temp) {
+        if(x==' ') {
+          continue;
+        }
+        out.clear();
         out+=x;
         out+="\n";
+        cout<<out;
         do {
           Serial.writeline(out);
         } while(Serial.readline()!="A\n");
+        cout<<"ok"<<endl;
       }
       break;
 

@@ -38,19 +38,18 @@ bool numcheck=false;
 char* buffer = (char *) malloc(buf_size);
 //int array[1000];
 //int colour[1000];
-int size=0;
 int index=0;
 int level=0;
 int horizontal=0;
 int num=0;
-bool colour=0;
+bool colour=false;
 void printtree() {
 
     int xcoord,ycoord=0;
 
     ycoord=level+1*40;
     int temp= pow(2,level+1);
-    xcoord=(horizontal)*(DISPLAY_WIDTH/(pow(2,level)+1));
+    xcoord=(horizontal+1)*(DISPLAY_WIDTH/(pow(2,level)+1));
     if (colour) {
         tft.fillCircle(xcoord, ycoord, 12, ILI9341_RED);
     }
@@ -61,30 +60,6 @@ void printtree() {
     tft.setTextSize(1);
     tft.setTextColor(ILI9341_WHITE);
     tft.print(num);
-//
-//        if (formatted[i]!=0) {
-//            if (2 * i + 1 < n) {
-//                if (formatted[2 * i + 1] != 0) {
-//                    tft.drawLine(xcoord - 10, ycoord, xcoord - 20, ycoord + 30, ILI9341_BLACK);
-//                }
-//            }
-//            if (2 * i + 2 < n) {
-//                if (formatted[2 * i + 2] != 0) {
-//                    tft.drawLine(xcoord + 10, ycoord, xcoord + 20, ycoord + 30, ILI9341_BLACK);
-//                }
-//                if (colour[i]==0) {
-//                    tft.fillCircle(xcoord, ycoord, 12, ILI9341_RED);
-//                }
-//                else {
-//                    tft.fillCircle(xcoord,ycoord, 12, ILI9341_BLACK);
-//                }
-//                tft.setCursor(xcoord - 2, ycoord - 5);
-//                tft.setTextSize(1);
-//                tft.setTextColor(ILI9341_WHITE);
-//                tft.print(formatted[i]);
-//            }
-//        }
-//    }
 }
 
 void process_line() {
@@ -98,28 +73,30 @@ void process_line() {
             if (buffer[0]==48) {
                 colour=false;
             }
-            tft.setCursor(0,0);
-            tft.setTextSize(2);
-            tft.setTextColor(ILI9341_BLACK);
-            tft.print("hello");
             printtree();
             level++;
             buf_len = 0;
             buffer[buf_len] = 0;
             Serial.println('A');
-            level++;
 
         }
         else {
             int i = 0;
+            num=0;
             while (buffer[i] >= 48 and buffer[i] <= 57) {
                 num = num * 10 + buffer[i] - 48;
                 i++;
+
             }
+            tft.setCursor(0,0);
+            tft.setTextColor(ILI9341_BLACK);
+            tft.setTextSize(3);
+            tft.print(num);
+            numcheck=true;
 
             buf_len = 0;
             buffer[buf_len] = 0;
-            Serial.println('A');
+            Serial.println("A");
         }
     }
     if (buffer[0]=='R') {
