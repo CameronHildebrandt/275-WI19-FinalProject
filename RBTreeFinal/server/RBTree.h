@@ -392,8 +392,6 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 	}
 
 
-
-
 	// adjust the appropriate child pointer of the node's parent
 	if(node->parent == NULL) {
 		// in this case, we are deleting the root node
@@ -411,23 +409,29 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 	if(child) {
 		child->parent = node->parent;
 	}
+	cout << "" << endl;
 
 	// Fix the RB properties
 	// If the node is black and the child is red, paint the child black
-  if (node->colour == BLACK) {
+  if (node->colour == BLACK && node->parent != NULL) {
     if (child->colour == RED) {
       child->colour = BLACK;
     }
-  else
-    removeCase1(child);
+	  else {
+	    removeCase1(child);
+		}
   }
+
 
 	// ensures ~RBNode() does not recursively delete other parts of the tree
 	node->left = node->right = NULL;
 
+
+
 	// the node is now gone!
 	delete node;
 	--RBSize;
+
 }
 
 // template <typename K, typename T>
