@@ -138,7 +138,7 @@ void process_line() {
             i++;
         }
         i++;
-        colour[index]=buffer[i];
+        colour[index]=buffer[i]-48;
         index++;
         Serial.flush();
         Serial.println('A');
