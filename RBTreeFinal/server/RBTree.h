@@ -68,10 +68,11 @@ public:
 	// and has the correct node count)
 	// Takes O(n) time.
 	void checkStructure() const;
-	RBNode<K,T> *root;
+
+	void treePrint();
 
 private:
-
+	RBNode<K,T> *root;
 	unsigned int RBSize;
 
 	// returns a pointer to the node containing the key,
@@ -79,17 +80,19 @@ private:
 	// or NULL if the tree is currently empty
 	RBNode<K,T>* findNode(const K& key) const;
 
+	void treeRecurse(RBNode<K,T>* node);
+
 	// assumes at least one child of node is NULL, will delete
 	// the node and move its only child (if any) to its place
 	void pluckNode(RBNode<K,T>* node);
 
 	// fix the AVL property at this node and, recursively, all
 	// nodes above it
-//	void fixUp(RBNode<K,T>* node);
+	// void fixUp(RBNode<K,T>* node);
 
 	// recalculate the height of the node, assuming its children's heights
 	// are correct
-//	void recalcHeight(RBNode<K,T>* node);
+	//void recalcHeight(RBNode<K,T>* node);
 
 	// left and right rotations, return a pointer to the new root
 	// of the subtree after the rotation, assumes the corresponding
@@ -209,11 +212,11 @@ void RBTree<K,T>::remove(const K& key) {
 
 	// make sure the key is in the tree
 	// we only assume < is implemented for the key type, not necessarily ==
-//	assert(node != NULL && !(node->key < key || key < node->key));
 	if(node == NULL && !(node->key < key || key < node->key)) {
-		cout << "rip search" << endl;
+		// cout << "rip search" << endl;
 		return;
 	}
+
 	// find the maximum-key node in the left subtree of the node to remove
 	RBNode<K,T> *tmp = node->left, *pluck = node;
 	while (tmp != NULL) {
@@ -227,18 +230,21 @@ void RBTree<K,T>::remove(const K& key) {
 	node->key = pluck->key;
 	node->item = pluck->item;
 
-//	RBNode<K,T> *pluckParent = pluck->parent;
+	//RBNode<K,T> *pluckParent = pluck->parent;
 
 	//removeChild(pluck->parent);
-	cout<<"breakpoint0\n";
-
+	// cout << "breakpoint0\n";
 	// this function will delete a node with no left child and
 	// restructure the tree
 	pluckNode(pluck);
+	//removeChild(pluck);
 
+	// cout << "breakpoint1\n";
 	// now fix the AVL tree up starting from the parent
 	// of the recently-deleted node
-//	fixUp(pluckParent);
+	// fixUp(pluckParent);
+
+	// ****** THIS IS WHERE YOU WANT TO PUT THE REMOVEFIX ********
 
 }
 
@@ -301,6 +307,60 @@ RBNode<K,T>* RBTree<K,T>::findNode(const K& key) const {
 	}
 }
 
+
+template <typename K, typename T>
+void RBTree<K,T>::treeRecurse(RBNode<K,T>* node) {
+	// Output the value of this node before recursing
+	cout << node->key << ',' << node->colour << ' ';
+
+
+	// Recurse down the left of the tree first, then work our way right.
+	if(node->left != NULL) {
+		treeRecurse(node->left);
+	}
+	cout << "R ";
+	if(node->right != NULL) {
+		treeRecurse(node->right);
+	}
+	cout << "U ";
+}
+
+template <typename K, typename T>
+void RBTree<K,T>::treePrint() {
+	RBNode<K,T> *root = this->root;
+	// Traverse down the tree, going left and right as appropriate,
+	// until a leaf is found, print up recursively.
+	// Suppose the tree was:   20
+	//											 5    31
+	// 										  1 7  25 33
+	// This function would print it as:
+	// 20 5 1 R U R 7 U U 31 25 33
+
+	if(root != NULL) {
+		treeRecurse(root);
+	}
+	cout << endl;
+
+	// while (node != NULL && node->key != key) {
+	// 	parent = node;
+	// 	if (key < node->key) {
+	// 		node = node->left;
+	// 	}
+	// 	else {
+	// 		node = node->right;
+	// 	}
+	// }
+	// if (node == NULL) {
+	// 	// key not found
+	// 	// here, parent == NULL if and only if the tree is empty
+	// 	return parent;
+	// }
+	// else {
+	// 	// key found
+	// 	return node;
+	// }
+}
+
 // an RBIterator is just a wrapper for a pointer to a node
 template <typename K, typename T>
 RBIterator<K,T> RBTree<K,T>::begin() const {
@@ -331,13 +391,16 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 		child = node->right;
 	}
 
+
+
+
 	// adjust the appropriate child pointer of the node's parent
-	if (node->parent == NULL) {
+	if(node->parent == NULL) {
 		// in this case, we are deleting the root node
 		// so set the new root to the child
 		this->root = child;
 	}
-	else if (node->parent->left == node) {
+	else if(node->parent->left == node) {
 		node->parent->left = child;
 	}
 	else {
@@ -345,19 +408,19 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 	}
 
 	// if we are not deleting a leaf, the child also gets a new parent
-	if (child) {
+	if(child) {
 		child->parent = node->parent;
 	}
 
 	// Fix the RB properties
 	// If the node is black and the child is red, paint the child black
-	if (node->colour == BLACK) {
-		if (child->colour == RED) {
-			child->colour = BLACK;
-		}
-		else
-			removeCase1(child);
-	}
+  if (node->colour == BLACK) {
+    if (child->colour == RED) {
+      child->colour = BLACK;
+    }
+  else
+    removeCase1(child);
+  }
 
 	// ensures ~RBNode() does not recursively delete other parts of the tree
 	node->left = node->right = NULL;
@@ -367,57 +430,57 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 	--RBSize;
 }
 
-//template <typename K, typename T>
-//void RBTree<K,T>::fixUp(RBNode<K,T> *node) {
-//	// keep climbing up the tree until we are past the root
-//	while (node != NULL) {
-//		// first make sure the height of node is correctly computed
-//		node->recalcHeight();
+// template <typename K, typename T>
+// void RBTree<K,T>::fixUp(RBNode<K,T> *node) {
+// 	// keep climbing up the tree until we are past the root
+// 	while (node != NULL) {
+// 		// first make sure the height of node is correctly computed
+// 		node->recalcHeight();
 //
-//		// now compare the heights of the children
-//		int lh, rh;
-//		node->childHeights(lh, rh);
+// 		// now compare the heights of the children
+// 		int lh, rh;
+// 		node->childHeights(lh, rh);
 //
-//		// should never differ by more than 2, otherwise
-//		// there was a bug in the code
-//		assert(abs(lh-rh) <= 2);
+// 		// should never differ by more than 2, otherwise
+// 		// there was a bug in the code
+// 		assert(abs(lh-rh) <= 2);
 //
-//		// if there is a violation of the AVL property, perform the
-//		// appropriate rotation(s)
-//		// see eClass notes for the different rules for applying rotations
-//		if (lh == rh+2) {
-//			// left child is higher
+// 		// if there is a violation of the AVL property, perform the
+// 		// appropriate rotation(s)
+// 		// see eClass notes for the different rules for applying rotations
+// 		if (lh == rh+2) {
+// 			// left child is higher
 //
-//			RBNode<K,T>* lchild = node->left;
-//			int llh, lrh;
-//			lchild->childHeights(llh, lrh);
+// 			RBNode<K,T>* lchild = node->left;
+// 			int llh, lrh;
+// 			lchild->childHeights(llh, lrh);
 //
-//			if (llh < lrh) {
-//				rotateLeft(lchild);
-//			}
-//			node = rotateRight(node);
-//		}
-//		else if (lh+2 == rh) {
-//			// right child is higher
+// 			if (llh < lrh) {
+// 				rotateLeft(lchild);
+// 			}
+// 			node = rotateRight(node);
+// 		}
+// 		else if (lh+2 == rh) {
+// 			// right child is higher
 //
-//			RBNode<K,T>* rchild = node->right;
-//			int rlh, rrh;
-//			rchild->childHeights(rlh, rrh);
+// 			RBNode<K,T>* rchild = node->right;
+// 			int rlh, rrh;
+// 			rchild->childHeights(rlh, rrh);
 //
-//			if (rlh > rrh) {
-//				rotateRight(rchild);
-//			}
-//			node = rotateLeft(node);
-//		}
+// 			if (rlh > rrh) {
+// 				rotateRight(rchild);
+// 			}
+// 			node = rotateLeft(node);
+// 		}
 //
-//		// whether we rotated or not, "node" is now the
-//		// root of the subtree we were checking
+// 		// whether we rotated or not, "node" is now the
+// 		// root of the subtree we were checking
 //
 //
-//		// crawl up the tree one step
-//		node = node->parent;
-//	}
-//}
+// 		// crawl up the tree one step
+// 		node = node->parent;
+// 	}
+// }
 
 template <typename K, typename T>
 RBNode<K,T>* RBTree<K,T>::rotateRight(RBNode<K,T>* node) {
@@ -448,8 +511,8 @@ RBNode<K,T>* RBTree<K,T>::rotateRight(RBNode<K,T>* node) {
 	node->left = lchild->right;
 	lchild->right = node;
 
-//	node->recalcHeight();
-//	lchild->recalcHeight();
+	//node->recalcHeight();
+	//lchild->recalcHeight();
 
 	return lchild;
 }
@@ -484,8 +547,8 @@ RBNode<K,T>* RBTree<K,T>::rotateLeft(RBNode<K,T>* node) {
 	node->right = rchild->left;
 	rchild->left = node;
 
-//	node->recalcHeight();
-//	rchild->recalcHeight();
+	//node->recalcHeight();
+	//rchild->recalcHeight();
 
 	return rchild;
 }
@@ -560,14 +623,14 @@ void RBTree<K,T>::insertCase1(RBNode<K,T>* node) {
   /* This fucntion ensures that if the node is the root, it is black
    */
   if (getParent(node) == NULL) {
-    node->colour = BLACK; //true == black
+    node->colour = BLACK;
   }
 }
 
 template <typename K, typename T>
 void RBTree<K,T>::insertCase3(RBNode<K,T>* node) {
-  /* This function ensures that red nodes do not have red children
-   */
+  // This function ensures that red nodes do not have red children
+
 
   // Reassign the respective colours
   getParent(node)->colour = BLACK;
@@ -645,29 +708,27 @@ void RBTree<K,T>::fixTreeInsert(RBNode<K,T>* node) {
    * This function validates and fixes the properties of the RBTree.
    */
 
-  // std::cout << "fixBreakpoint0\n";
   // Case 1 - If the node is the root, ensure it is black
   if (getParent(node) == NULL) {
-    // std::cout << "fixBreakpoint1\n";
+		// cout << "Case 1 Triggered." << endl;
     insertCase1(node);
   }
   // Case 2 - If the node is not the root, ensure the parent is black
   else if (getParent(node)->colour == BLACK) {
-    // std::cout << "fixBreakpoint2\n";
+		// cout << "Case 2 Triggered." << endl;
     return; // Since the inserted node is red, the tree properties are
-            // satisfied.
+            // satisfied, kill before anything is broken.
   }
   // Case 3 - The parent and uncle are not black, so simply change colours
   else if (getUncle(node) != NULL && getUncle(node)->colour == RED) {
-    // std::cout << "fixBreakpoint3\n";
+		// cout << "Case 3 Triggered." << endl;
     insertCase3(node);
   }
-  // Case 4 - The parent is not black, but the uncle is, so start rotating
-  else if(getUncle(node) != NULL && getUncle(node)->colour == BLACK){
-    // std::cout << "fixBreakpoint4\n";
+  // Case 4 - Every other case
+  else {
+		// cout << "Case 4 Triggered." << endl;
     insertCase4(node);
   }
-  // std::cout << "fixBreakpoint5\n";
 }
 
 
@@ -837,22 +898,24 @@ void RBTree<K,T>::removeChild(RBNode<K,T>* node) {
    * This function strps off the child of a node.
    */
 
-   if(!isLeaf(node->right) && !isLeaf(node->left)) {
-     std::cout << "Error: Attempted to remove a node without a child " <<
-                  "that is a leaf node.\n";
-      return;
-   }
 
-  // Select the child that is not a leaf
+
+	if(!isLeaf(node->right) && !isLeaf(node->left)) {
+		std::cout << "Error: Attempted to remove a node without a child " <<
+		            "that is a leaf node.\n";
+		return;
+	}
+
+  // Select the child that is a leaf
   RBNode<K,T>* child = isLeaf(node->right) ? node->left : node->right;
 
   // Replace the current node
   replaceNode(node, child);
 
-  // If the node is black and the child is red, make the child black
-  if (node->colour == BLACK) { //true == black
-    if (child->colour == RED) { //false == red
-      child->colour = BLACK; //true == black
+  // If the node is black and the child is red, paint the child black
+  if (node->colour == BLACK) {
+    if (child->colour == RED) {
+      child->colour = BLACK;
     }
   else
     removeCase1(child);
@@ -865,9 +928,59 @@ void RBTree<K,T>::removeChild(RBNode<K,T>* node) {
 	delete node;
 	--RBSize;
 
-//  // Remove node from memory
-//  free(node);
+  // // Remove node from memory
+  // free(node);
 }
+
+
+
+
+
+// template <typename K, typename T>
+// void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
+//
+// 	// first find the only child (if any) of "node"
+// 	RBNode<K,T> *child;
+// 	if(node->left) {
+// 		child = node->left;
+// 		// make sure the node does not have two children
+// 		assert(child->right == NULL);
+// 	}
+// 	else {
+// 		// might still be NULL, meaning we are plucking a leaf node
+// 		child = node->right;
+// 	}
+//
+//
+// 	// adjust the appropriate child pointer of the node's parent
+// 	if(node->parent == NULL) {
+// 		// in this case, we are deleting the root node
+// 		// so set the new root to the child
+// 		this->root = child;
+// 	}
+// 	else if(node->parent->left == node) {
+// 		node->parent->left = child;
+// 	}
+// 	else {
+// 		node->parent->right = child;
+// 	}
+//
+// 	// if we are not deleting a leaf, the child also gets a new parent
+// 	if(child) {
+// 		child->parent = node->parent;
+// 	}
+//
+// 	// ensures ~RBNode() does not recursively delete other parts of the tree
+// 	node->left = node->right = NULL;
+//
+// 	// the node is now gone!
+// 	delete node;
+// 	--RBSize;
+// }
+
+
+
+
 
 
 

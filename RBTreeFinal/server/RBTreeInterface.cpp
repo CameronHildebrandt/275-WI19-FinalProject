@@ -8,102 +8,15 @@
 #include <iostream>
 #include <string>
 #include "RBTree.h"
-#include "serialport.h"
-#include "serialport.cpp"
-#include <vector>
-#include <algorithm>
 
-SerialPort Serial("/dev/ttyACM0");
-
-
-void serialPrintTree(vector<pair<int,int>> vec, int size) {
-  cout << "hello" << endl;
-  string mode;
-  string temp;
-  temp.insert(0, "N ");
-  temp.insert(2, to_string(size));
-  temp.insert(temp.size(), "\n");
-  cout << temp << endl;
-  Serial.writeline(temp);
-  mode = Serial.readline();
-  cout << mode << endl;
-  for (int i = 0; i < size; i++) {
-    temp.clear();
-    temp.insert(0, "E ");
-    temp.insert(2, to_string(vec[i].first));
-    temp.insert(temp.size()," ");
-    temp.insert(temp.size(),to_string(vec[i].second));
-    temp.insert(temp.size(), "\n");
-//    cout << temp << endl;
-    do {
-      Serial.writeline(temp);
-    } while (Serial.readline() != "A\n");
-  }
-  temp.clear();
-  temp.insert(0, "X \n");
-  do {
-    Serial.writeline(temp);
-  } while (Serial.readline() != "A\n");
-  cout << "Done!" << endl<<endl;
-
-}
-
-void printTree(const RBTree<int, int>& tree) {
-  int index=0;
-  vector<pair<int,int>> temp;
-  for (int i=0; i<50; i++) {
-    temp.push_back(make_pair(0,0));
-  }
-  for (RBIterator<int, int> iter = tree.root; iter != tree.end(); ++iter) {
-    if (iter==tree.root) {
-      temp.insert(temp.begin(), make_pair(iter.item(), iter.colour()));
-    }
-    else {
-      RBNode<int,int> *parent= iter.node->parent;
-      int parentitem=parent->item;
-      int parentcolour=parent->colour;
-      cout<<parentitem;
-      vector<pair<int,int>>::iterator position=find(temp.begin(),temp.end(), make_pair(parentitem, parentcolour));
-      if (iter==parent->left) {
-        index=distance(temp.begin(), position)*2+1;
-      }
-
-      if (iter==parent->right) {
-        index=distance(temp.begin(), position)*2+2;
-      }
-      temp[index]=make_pair(iter.item(),iter.colour());
-    }
-    if (!iter.node->left) {
-      temp[index*2+1]=make_pair(0,0);
-    }
-    if (!iter.node->right) {
-      temp[index*2+2]=make_pair(0,0);
-    }
-    cout << " - " << iter.key() << ' ' << iter.item() << ' ' << iter.colour() << endl;
-  }
-  serialPrintTree(temp, temp.size());
-}
-
-
+// void printTree(const RBTree<int, string>& tree) {
+//   for (RBIterator<int, string> iter = tree.begin(); iter != tree.end(); ++iter) {
+//     cout << "- " << iter.key() << ' ' << iter.colour() << endl;
+//   }
+// }
 
 int main() {
-
-  // Initialize the variables
-  string nextPhase = "PHASE01\n";
-  string line;
-  do {
-    line = Serial.readline();
-  } while (line != nextPhase);
-  cout<<"Link established"<<endl;
-  // switch to next phase
-  while(true) {
-    Serial.writeline("x");
-    if (Serial.readline()=="thanks\n") {
-      break;
-    }
-  }
-
-  RBTree<int, int> tree;
+  RBTree<int, string> tree;
 
   cout << "Possible Commands:" << endl;
   cout << "I <value> - insert a value" << endl;
@@ -117,7 +30,7 @@ int main() {
   while (true) {
     char cmd;
     int value;
-    int word;
+    string word;
 
     cin >> cmd;
     switch(cmd) {
@@ -126,9 +39,11 @@ int main() {
         break;
 
     case 'I':
-      word = tree.size();
+      word = "null";
       cin >> value;
-      tree[word] = value;
+      tree[value] = word;
+      //printTree(tree);
+      tree.treePrint();
       break;
 
     case 'F':
@@ -146,12 +61,15 @@ int main() {
       if (!tree.hasKey(value)) {
         cout << value << " not found" << endl;
       }
-      tree.remove(value);
+      else {
+        tree.remove(value);
+      }
       break;
 
     case 'P':
-      cout << "printing" << endl;
-      printTree(tree);
+      //cout << "printing" << endl;
+      // printTree(tree);
+      tree.treePrint();
       break;
 
     case 'Q':
@@ -165,6 +83,6 @@ int main() {
       break;
     }
 
-    tree.checkStructure();
+    // tree.checkStructure();
   }
 }
