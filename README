@@ -6,103 +6,116 @@
 --------------------------------------------------------
 
 
-Included Files: NEEDS UPDATE
- - server.cpp
- - dijkstra.cpp
- - dijkstra.h
- - generate_graph.cpp
- - generate_graph.h
- - heap.cpp
- - heap.h
- - digraph.cpp
- - digraph.h
- - wdigraph
- - edmonton-roads-2.0.1.txt
- - Makefile
+Included Files:
+  - BinHeap
+    - client.cpp (Arduino)
+    - heap.h
+    - heap.cpp
+    - heapsort.cpp
+    - serialport.h
+    - serialport.cpp
+    - Makefile (Arduino)
+    - Makefile (Server)
+
+  - RBTree
+    - client.cpp (Arduino)
+    - RBTreeAux.h
+    - RBTree.h
+    - RBTreeInterface
+    - serialport.h
+    - serialport.cpp
+    - Makefile (Arduino)
+    - Makefile (Server)
 
 
-Libraries Used: NEEDS UPDATE
-  - unordered_map
-  - unordered_set
-  - vector
-  - set
+Libraries Used:
+  - cstdlib
   - iostream
   - string
-  - fstream
-  - cmath
-  - list
+  - stdio.h
+  - termios.h
+  - fcntl.h
+  - sys/types.h
+  - sys/stat.h
+  - sys/ioctl.h
+  - unistd.h
+  - stdlib.h
+  - time.h
+  - heap.h
+  - heap.cpp
+  - vector
   - utility
+  - algorithm
+  - Arduino.h
+  - Adafruit_ILI9341.h
+  - math.h
 
 
-Assumptions: NEEDS UPDATE
+Assumptions:
   - The user has some experience using Arduinos and understands the basics of
     an Arduino board
   - The user has a basic understanding of the command line.
 
 
 Program Functionality: NEEDS UPDATE
-  The program takes input from a client (which for this execise is stdin) and
-  computes the shortest path between the two specified coordinates using graph
-  information provided by saved file. It will then return the series of
-  coordinates corresponsing to waypoints between the two points.
+  RBTree:
+    This program was initially intended to display on the Arduino display,
+    however, we were constrained by time and were not able to get the display
+    working properly. Thus, the display parts that we had are still in the
+    code, but they are commented out. This program can thus simply be run on
+    the computer. The program accepts commands given the tree information
+    about what values to store and delete. The commands will be displayed
+    once the program is first opened.
+
+    Since we were unable to implement this on the arduino, the output is
+    a text representation of the tree (that we were working on using for the
+    visuallizer). For example, the tree:
+
+               20(B)
+         10(B)      30(B)
+      1(R) 15(R) 22(R) 100(R)
+
+    Would be represented by:
+      20,1 10,1 1,0 R U R 15,0 R U U R 30,1 22,0 R U R 100,0 R U U U
+
+    On a high level, this is printing the root node, then recursing down the
+    left brnach of the tree until it no longer can. Then, when it starts
+    recursing up the left side, it begins recursing down each right child (an
+    'R' is printed). Once it has explored the entire right sub tree, it
+    recurses up and prints a 'U'. Each of the nodes is represented as the key
+    of that node and the colour of that node (1 == Black, 0 == Red).
+
+  BinHeap:
+
+
+    ***TODO***
 
 
 Running Instructions: NEEDS UPDATE
-  To compile this program, ensure you are in the correct directory and type
-  "make". This will ocmpile and link all of the necessary files for running
-  this program. To run the program, type "./server". The file expects the
-  following inputs  where "<\n>" represents the newline character:
-    - "R [point one latitude] [point one longditude]
-         [point two latitude] [point two longditude] <\n>" The two waypoints to
-                                                           find a path between
+  RBTree:
+    The Makefile targets are:
+      - make (all) - compile all files to produce the executable "RBtree"
+      - make clean - remove all object and 'mid-compiling' files
+      - make clall - remove the executable too.
 
-    - "A <\n>" Ackowledge that the waypoint was reciecved
+    To run this program, simply type "make" then "./RBTree". To continue
+    using the program, follow the onscreen isntructions.
 
+  BinHeap:
+    The Makefile targets are:
 
-  The program will output the series of waypoints to get between the two
-  points in the form:
-    - "N [number of waypoints] <\n>" The number of waypoints to be passed
+      ***TODO***
 
-    - "W [latitude] [longditude] <\n>" N times (for each waypoint, waiting
-                                       for ack to send next).
-
-    - "E <\n>" Signifying the end of transmission
-
-
-Known Limitations: NEEDS UPDATE
-  - None.
+Known Limitations:
+  - The visuallization of the red-black tree was not entirely fucntional, and
+    thus had to be cut out for the presentation. The code for displaying the
+    RBTree is still in the files, however it is simply commented out.
 
 
-Additional Notes: NEEDS UPDATE
-  - The file heap.cpp was added for the implementation of heap to keep
-    consistent with the other files.
-    The purpose of this file is to reduce the likelihood of linking errors.
-
-  - The function readGraph (In our code called "read_city_graph_undirected")
-    has been abstracted into its own file due to its relatively large size
-    (alongside the closely related "manhattan" function) called
-    "generate_graph.cpp" and a "generate_graph.h" file was also created for
-    consistency.
-    The purpose of adding this file is because it contains a large function
-    that would have taken up a lot of room in the main file.
-
-  - The files "digraph.h, digraph.cpp, and wdigraph.cpp" are included so that
-    our functions and functions that are in the included files.
-    The purpose of these files is to avoid tainting the provided files
-    as much as possible and to keep the main file clean.
+Additional Notes:
+  - ?????
 
 
-  - The makefile target "generate_graph" was included so that the
-    generate_graph function could be compiled independently if necessay.
-
-
-Makefile Targets:
-  - make (all) - compiles and links all of the requred files for the RBTree
-                 executable.
-  - make clean - removes all of the pre-linked .o files, leaves the executable
-  - make call - ("clean all") removes the executeable file as well as the
-                pre-linked .o files.
-
-
-References: NEEDS UPDATE
+References:
   - Red Black Tree - https://en.wikipedia.org/wiki/Red–black_tree
+  - WE7 Files - https://eclass.srv.ualberta.ca/mod/resource/view.php?id=3507236
