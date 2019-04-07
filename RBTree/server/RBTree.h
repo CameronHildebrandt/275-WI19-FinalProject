@@ -123,7 +123,9 @@ private:
 	void removeChild(RBNode<K,T>* node);
 };
 
-// ***** IMPLEMENTATION *****
+
+// ***** Public Methods ***** //
+
 
 template <typename K, typename T>
 RBTree<K,T>::RBTree() {
@@ -193,7 +195,7 @@ void RBTree<K,T>::update(const K& key, const T& item) {
 
 template <typename K, typename T>
 void RBTree<K,T>::remove(const K& key) {
-	/* Insert an element
+	/* Remove an element
 	 */
 
 	// Find the node to be deleted. If it does not exist.. don't delete it
@@ -215,27 +217,31 @@ void RBTree<K,T>::remove(const K& key) {
 	node->key = pluck->key;
 	node->item = pluck->item;
 
-	// Pluck the node
+	// Pluck the node. The pluckNode function itself automatically checks and
+	// fixes the RBTree properties.
 	pluckNode(pluck);
-
-	// Ensure the RBTree properties remain staisfied
-	//removeChild(pluck->parent);
 
 }
 
 template <typename K, typename T>
 bool RBTree<K,T>::hasKey(const K& key) const {
+	/* This function returns true if the key is in the tree
+	 */
 
-	// "find" the node, and then check it really has the key
+	// Use the previously implemented findNode to find a given key. If the found
+	// node is either not NULL and also not the parent node (which the
+	// "findNode") may also return, then the node is in the tree!
 	RBNode<K,T> *node = findNode(key);
 	return node != NULL && !(node->key != key);
 }
 
 template <typename K, typename T>
 T& RBTree<K,T>::operator[](const K& key) {
+	/* This function inserts a given key into a tree and returns the item of the
+	 * newly inserted key
+	 */
 
-	// "find" the node, if not found then create an entry
-	// using the default constructor for the item type
+	// If the node isn't already in the tree, insert it
 	if (!hasKey(key)) {
 		update(key, T());
 	}
@@ -245,15 +251,26 @@ T& RBTree<K,T>::operator[](const K& key) {
 
 template <typename K, typename T>
 unsigned int RBTree<K,T>::size() const {
+	/* Return the size of the tree
+	 */
+
 	return this->RBSize;
 }
 
 template <typename K, typename T>
 RBNode<K,T>* RBTree<K,T>::findNode(const K& key) const {
-	RBNode<K,T> *node = this->root, *parent = NULL;
-	// traverse down the tree, going left and right as appropriate,
-	// until the key is found or we fall off of the leaf node
+	/* This function takes advantage of the properties of a binary tree and
+	 * traverses down the tree to find a node. If the search falls off of the
+	 * tree (it finds "NULL") then it returns either the parent (where the
+	 * key would be inserted) or NULL if the tree is empty. If the search doesn't
+	 * fall off of the tree, return the node.
+	 */
 
+	// Initialize the nodes that will be used for searching
+	RBNode<K,T> *node = this->root, *parent = NULL;
+
+	// Traverse down the tree, going left and right as appropriate,
+	// until the key is found or we fall off of the leaf node
 	while (node != NULL && node->key != key) {
 		parent = node;
 		if (key < node->key) {
@@ -265,46 +282,43 @@ RBNode<K,T>* RBTree<K,T>::findNode(const K& key) const {
 	}
 
 	if (node == NULL) {
-		// key not found
-		// here, parent == NULL if and only if the tree is empty
+		// Key not found
+		// This is only satisfied if parent == NULL, which means the tree is empty
 		return parent;
 	}
 	else {
-		// key found
+		// Key found
 		return node;
 	}
 }
 
-
 template <typename K, typename T>
 void RBTree<K,T>::treeRecurse(RBNode<K,T>* node) {
-	// Output the value of this node before recursing
+	/* This function recurses down the left side of the tree, printing out the
+	 * keys (and colours) of each node as it recurses. Expects to be initially
+	 * passed the root node, If it isn't, it will just print out the subtree
+	 * starting at the given node.
+	 */
 
+	// Print out the node's key and colour
 	cout << node->key << ',' << node->colour << ' ';
-	// keep+=node->key+48;
-	// keep +=" ";
-	//
-	// keep+= node->colour+48;
-	// keep+=" ";
-	// cout<<keep<<endl;
-
 
 	// Recurse down the left of the tree first, then work our way right.
 	if(node->left != NULL) {
 		treeRecurse(node->left);
 	}
-	// keep+="R ";
 	cout << "R ";
+
+	// Recurse down the right
 	if(node->right != NULL) {
 		treeRecurse(node->right);
 	}
-	// keep +="U ";
 	cout << "U ";
 }
 
 template <typename K, typename T>
 void RBTree<K,T>::treePrint() {
-	// keep.clear();
+
 	RBNode<K,T> *root = this->root;
 	// Traverse down the tree, going left and right as appropriate,
 	// until a leaf is found, print up recursively.
@@ -312,69 +326,56 @@ void RBTree<K,T>::treePrint() {
 	//											 5    31
 	// 										  1 7  25 33
 	// This function would print it as:
-	// 20 5 1 R U R 7 U U 31 25 33
+	// 20,1 5,1 1,0 R U R 7,0 R U U R 31,1 25,0 R U R 33,0 R U U U
 
+	// If the tree isn't empty, pass the root and begin recursively
+	// printing nodes
 	if(root != NULL) {
 		treeRecurse(root);
 	}
 	cout << endl;
-	//return keep;
-
-	// while (node != NULL && node->key != key) {
-	// 	parent = node;
-	// 	if (key < node->key) {
-	// 		node = node->left;
-	// 	}
-	// 	else {
-	// 		node = node->right;
-	// 	}
-	// }
-	// if (node == NULL) {
-	// 	// key not found
-	// 	// here, parent == NULL if and only if the tree is empty
-	// 	return parent;
-	// }
-	// else {
-	// 	// key found
-	// 	return node;
-	// }
 }
 
-// an RBIterator is just a wrapper for a pointer to a node
 template <typename K, typename T>
 RBIterator<K,T> RBTree<K,T>::begin() const {
+	// An RBIterator is just a wrapper for a pointer to a node
 	return RBIterator<K,T>(this->root);
 }
 
-// the NULL pointer represents the end iterator
 template <typename K, typename T>
 RBIterator<K,T> RBTree<K,T>::end() const {
+	// The NULL pointer represents the end iterator (whether thats an empty root
+	// or falling off of a leaf)
 	return RBIterator<K,T>(NULL);
 }
 
 
-// ***** NOW THE PRIVATE METHODS *****
+// ***** Private Methods ***** //
+
 
 template <typename K, typename T>
 void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
+	/* This is expecting either a leaf node or a node with only one child.
+	 * This function simply reassigns pointers to remove the node from the tree
+	 */
 
-	// first find the only child (if any) of "node"
+	// First find the only child (if any) of "node"
 	RBNode<K,T> *child;
 	if(node->left) {
 		child = node->left;
-		// make sure the node does not have two children
+		// Make sure the node does not have two children
 		assert(child->right == NULL);
 	}
 	else {
-		// might still be NULL, meaning we are plucking a leaf node
+		// Might still be NULL, meaning we are plucking a leaf node
 		child = node->right;
 	}
 
 
-	// adjust the appropriate child pointer of the node's parent
+	// Adjust the appropriate child pointer of the node's parent
 	if(node->parent == NULL) {
-		// in this case, we are deleting the root node
-		// so set the new root to the child
+		// In this case, we are deleting the root node
+		// So set the new root to the child
 		this->root = child;
 	}
 	else if(node->parent->left == node) {
@@ -384,11 +385,10 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 		node->parent->right = child;
 	}
 
-	// if we are not deleting a leaf, the child also gets a new parent
+	// If we are not deleting a leaf, the child also gets a new parent
 	if(child) {
 		child->parent = node->parent;
 	}
-	//cout << "" << endl;
 
 	// Fix the RB properties
 	// If the node is black and the child is red, paint the child black
@@ -401,78 +401,28 @@ void RBTree<K,T>::pluckNode(RBNode<K,T>* node) {
 		}
   }
 
-
-	// ensures ~RBNode() does not recursively delete other parts of the tree
+	// Ensures ~RBNode() does not recursively delete other parts of the tree
 	node->left = node->right = NULL;
 
-
-
-	// the node is now gone!
+	// The node is now gone!
 	delete node;
 	--RBSize;
 
 }
 
-// template <typename K, typename T>
-// void RBTree<K,T>::fixUp(RBNode<K,T> *node) {
-// 	// keep climbing up the tree until we are past the root
-// 	while (node != NULL) {
-// 		// first make sure the height of node is correctly computed
-// 		node->recalcHeight();
-//
-// 		// now compare the heights of the children
-// 		int lh, rh;
-// 		node->childHeights(lh, rh);
-//
-// 		// should never differ by more than 2, otherwise
-// 		// there was a bug in the code
-// 		assert(abs(lh-rh) <= 2);
-//
-// 		// if there is a violation of the AVL property, perform the
-// 		// appropriate rotation(s)
-// 		// see eClass notes for the different rules for applying rotations
-// 		if (lh == rh+2) {
-// 			// left child is higher
-//
-// 			RBNode<K,T>* lchild = node->left;
-// 			int llh, lrh;
-// 			lchild->childHeights(llh, lrh);
-//
-// 			if (llh < lrh) {
-// 				rotateLeft(lchild);
-// 			}
-// 			node = rotateRight(node);
-// 		}
-// 		else if (lh+2 == rh) {
-// 			// right child is higher
-//
-// 			RBNode<K,T>* rchild = node->right;
-// 			int rlh, rrh;
-// 			rchild->childHeights(rlh, rrh);
-//
-// 			if (rlh > rrh) {
-// 				rotateRight(rchild);
-// 			}
-// 			node = rotateLeft(node);
-// 		}
-//
-// 		// whether we rotated or not, "node" is now the
-// 		// root of the subtree we were checking
-//
-//
-// 		// crawl up the tree one step
-// 		node = node->parent;
-// 	}
-// }
-
 template <typename K, typename T>
 RBNode<K,T>* RBTree<K,T>::rotateRight(RBNode<K,T>* node) {
+	/* A right rotation. This function preforms a right rotation on the node
+	 * passed to it. This is fundamental to maintaining the RBTree
+	 * properties. This function reassigns pointers to move around nodes of
+	 * the tree.
+	 */
+
+	// Find the left child of the given node.
 	RBNode<K,T> *lchild = node->left;
 	assert(left != NULL);
 
-	// To track all of these changes, it is best to
-	// draw your own picture with all relevant pointers
-	// to see these operations change them properly.
+	// Reassign the parents
 	if (node->parent) {
 		if (node == node->parent->left) {
 			node->parent->left = lchild;
@@ -485,6 +435,7 @@ RBNode<K,T>* RBTree<K,T>::rotateRight(RBNode<K,T>* node) {
 		root = lchild;
 	}
 
+	// Reassign the children
 	lchild->parent = node->parent;
 	node->parent = lchild;
 	if (lchild->right) {
@@ -494,21 +445,27 @@ RBNode<K,T>* RBTree<K,T>::rotateRight(RBNode<K,T>* node) {
 	node->left = lchild->right;
 	lchild->right = node;
 
-	//node->recalcHeight();
-	//lchild->recalcHeight();
-
+	// Return the "lchild", as this is the new root of this subtree.
 	return lchild;
 }
 
 template <typename K, typename T>
 RBNode<K,T>* RBTree<K,T>::rotateLeft(RBNode<K,T>* node) {
+	/* A left rotation. This function preforms a left rotation on the node
+	 * passed to it. This is fundamental to maintaining the RBTree
+	 * properties. This function reassigns pointers to move around nodes of
+	 * the tree.
+	 */
+
+	// Find the right child of the given node.
 	RBNode<K,T> *rchild = node->right;
-	assert(left != NULL);
+	assert(right != NULL);
 
 	// To track all of these changes, it is best to
 	// draw your own picture with all relevant pointers
 	// to see these operations change them properly.
 
+	// Reassign the parents
 	if (node->parent) {
 		if (node == node->parent->left) {
 			node->parent->left = rchild;
@@ -521,6 +478,7 @@ RBNode<K,T>* RBTree<K,T>::rotateLeft(RBNode<K,T>* node) {
 		root = rchild;
 	}
 
+	// Reassign the children
 	rchild->parent = node->parent;
 	node->parent = rchild;
 	if (rchild->left) {
@@ -530,28 +488,40 @@ RBNode<K,T>* RBTree<K,T>::rotateLeft(RBNode<K,T>* node) {
 	node->right = rchild->left;
 	rchild->left = node;
 
-	//node->recalcHeight();
-	//rchild->recalcHeight();
-
+	// Return the "rchild", as this is the new root of this subtree.
 	return rchild;
 }
 
 
-// Helper functions
+// ***** Helper Functions ***** //
+
+
 template <typename K, typename T>
 RBNode<K,T>* RBTree<K,T>::getParent(RBNode<K,T>* node) {
+	/* Returns the parent of a node.
+	 */
   return node->parent;
 }
 
 template <typename K, typename T>
 RBNode<K,T>* RBTree<K,T>::getGrandparent(RBNode<K,T>* node) {
+	/* Returns the grandparent of a node.
+	 */
   RBNode<K,T>* parent = getParent(node);
+
+	// If the parent does not have a parent, return NULL, as there is no
+	// grandparent.
+	if(parent == NULL) {
+		return NULL;
+	}
 
   return getParent(parent);
 }
 
 template <typename K, typename T>
 RBNode<K,T>* RBTree<K,T>::getSibling(RBNode<K,T>* node) {
+	/* Returns the sibling of a node (if it exists).
+	 */
   RBNode<K,T>* parent = getParent(node);
 
   // If there is no parent (root node), there are no siblings
@@ -572,6 +542,10 @@ RBNode<K,T>* RBTree<K,T>::getSibling(RBNode<K,T>* node) {
 
 template <typename K, typename T>
 RBNode<K,T>* RBTree<K,T>::getUncle(RBNode<K,T>* node) {
+	/* Returns the uncle of a node (if it exists).
+	 */
+
+	// Assign variables to the necessary nodes
   RBNode<K,T>* grandparent = getGrandparent(node);
   RBNode<K,T>* parent = getParent(node);
 
@@ -591,6 +565,8 @@ RBNode<K,T>* RBTree<K,T>::getUncle(RBNode<K,T>* node) {
 
 template <typename K, typename T>
 bool RBTree<K,T>::isLeaf(RBNode<K,T>* node) {
+	/* Determines if a given node is a leaf
+	 */
   if(node->right == NULL && node->left == NULL) {
     return true;
   }
@@ -598,9 +574,9 @@ bool RBTree<K,T>::isLeaf(RBNode<K,T>* node) {
 }
 
 
+// Tree Insertion //
 
 
-// Functions for fixing tree upon node insertion
 template <typename K, typename T>
 void RBTree<K,T>::insertCase1(RBNode<K,T>* node) {
   /* This fucntion ensures that if the node is the root, it is black
@@ -613,7 +589,6 @@ void RBTree<K,T>::insertCase1(RBNode<K,T>* node) {
 template <typename K, typename T>
 void RBTree<K,T>::insertCase3(RBNode<K,T>* node) {
   // This function ensures that red nodes do not have red children
-
 
   // Reassign the respective colours
   getParent(node)->colour = BLACK;
@@ -629,11 +604,10 @@ template <typename K, typename T>
 void RBTree<K,T>::insertCase4(RBNode<K,T>* node) {
   /* This function conducts rotations to reduce the depth of the tree
    */
-  // std::cout << "iCase4Breakpoint0\n";
+
   // Declare the relations
   RBNode<K,T>* parent = getParent(node);
   RBNode<K,T>* grandparent = getGrandparent(node);
-  // std::cout << "iCase4Breakpoint1\n";
 
   // The tree needs to be rotated left if it is a right child
   if (node == parent->right && parent == grandparent->left) {
@@ -646,12 +620,10 @@ void RBTree<K,T>::insertCase4(RBNode<K,T>* node) {
     rotateRight(parent);
     node = node->right;
   }
-  // std::cout << "iCase4Breakpoint2\n";
 
   // This likely violates tree properties, so fix the problems the
   // rotations casued.
   insertCase4Fix(node);
-  // std::cout << "iCase4Breakpoint3\n";
 }
 
 template <typename K, typename T>
@@ -659,29 +631,22 @@ void RBTree<K,T>::insertCase4Fix(RBNode<K,T>* node) {
   /* This function fixes the properties now violated by rotating the node's
    * grandparent and changing the colour of the parent and grandparent
    */
-  // std::cout << "iCase4Breakpoint4\n";
+
   // Declare the relations
   RBNode<K,T>* parent = getParent(node);
   RBNode<K,T>* grandparent = getGrandparent(node);
-  // std::cout << "iCase4Breakpoint5\n";
 
   // If the node is a left child, you have to rotate right
   if (node == parent->left) {
-    // std::cout << "rotateRightBreakpoint\n";
     rotateRight(grandparent);
   }
   else {
-    // std::cout << "rLeftBreakpoint\n";
     rotateLeft(grandparent);
   }
 
-  // std::cout << "iCase4Breakpoint6\n";
-
   // Fix the colours
-  parent->colour = BLACK; //true == black
-  grandparent->colour = RED; //false == red
-
-  // std::cout << "iCase4Breakpoint7\n";
+  parent->colour = BLACK;
+  grandparent->colour = RED;
 }
 
 template <typename K, typename T>
@@ -693,34 +658,31 @@ void RBTree<K,T>::fixTreeInsert(RBNode<K,T>* node) {
 
   // Case 1 - If the node is the root, ensure it is black
   if (getParent(node) == NULL) {
-		// cout << "Case 1 Triggered." << endl;
     insertCase1(node);
   }
   // Case 2 - If the node is not the root, ensure the parent is black
   else if (getParent(node)->colour == BLACK) {
-		// cout << "Case 2 Triggered." << endl;
     return; // Since the inserted node is red, the tree properties are
             // satisfied, kill before anything is broken.
   }
   // Case 3 - The parent and uncle are not black, so simply change colours
   else if (getUncle(node) != NULL && getUncle(node)->colour == RED) {
-		// cout << "Case 3 Triggered." << endl;
     insertCase3(node);
   }
   // Case 4 - Every other case
   else {
-		// cout << "Case 4 Triggered." << endl;
     insertCase4(node);
   }
 }
 
 
-// Functions for fixing tree upon node removal
+// Tree Removal //
+
+
 template <typename K, typename T>
 void RBTree<K,T>::removeCase1(RBNode<K,T>* node) {
-  /* Inputs: node - The node with violated RBTree properties to fix
-   * Output: None
-   *
+  /* This function ensures that a nodes parents exist. If they don't, no other
+	 * removal cases can be violated.
    */
 
   if (node->parent != NULL) {
@@ -730,17 +692,16 @@ void RBTree<K,T>::removeCase1(RBNode<K,T>* node) {
 
 template <typename K, typename T>
 void RBTree<K,T>::removeCase2(RBNode<K,T>* node) {
-  /* Inputs: node - The node with violated RBTree properties to fix
-   * Output: None
-   *
+  /* This funtion ensures that a node cannot be red and have red children
    */
 
   // Initialize the sibling
   RBNode<K,T>* sibling = getSibling(node);
 
-  if(sibling->colour == RED) { //false == red
-    node->parent->colour = RED; //false == red
-    sibling->colour = BLACK; //true == black
+	// Check the case
+  if(sibling->colour == RED) {
+    node->parent->colour = RED;
+    sibling->colour = BLACK;
 
     if (node == node->parent->left) {
       rotateLeft(node->parent);
@@ -749,108 +710,116 @@ void RBTree<K,T>::removeCase2(RBNode<K,T>* node) {
       rotateRight(node->parent);
     }
   }
+
+	// The case is either fixed or was not violated to begin with, contnue.
   removeCase3(node);
 }
 
 template <typename K, typename T>
 void RBTree<K,T>::removeCase3(RBNode<K,T>* node) {
-  /* Inputs: node - The node with violated RBTree properties to fix
-   * Output: None
-   *
+  /* This function ensures that there is not a large grouping of black nodes
    */
 
   // Initialize the sibling
   RBNode<K,T>* sibling = getSibling(node);
 
-  if((node->parent->colour == BLACK)    && //true == black
+  if((node->parent->colour == BLACK)    &&
      (sibling->colour == BLACK)         &&
      (sibling->left->colour == BLACK)   &&
      (sibling->right->colour == BLACK)) {
 
-    sibling->colour = RED; //false == red
+    sibling->colour = RED;
 
+		// May have violated more of the tree, fix the cases for the parent node
+		// before continuing.
     removeCase1(node->parent);
   }
   else {
+		// The case was not violated, continue.
     removeCase4(node);
   }
 }
 
 template <typename K, typename T>
 void RBTree<K,T>::removeCase4(RBNode<K,T>* node) {
-  /* Inputs: node - The node with violated RBTree properties to fix
-   * Output: None
-   *
+  /* This function also ensures that there is not a large grouping of
+	 * black nodes, just shifted down a little from the previous case.
    */
 
   // Initialize the sibling
   RBNode<K,T>* sibling = getSibling(node);
 
-  if((node->parent->colour == RED)   && //false == red
-     (sibling->colour == BLACK)         && //true == black
+  if((node->parent->colour == RED)   		&&
+     (sibling->colour == BLACK)         &&
      (sibling->left->colour == BLACK)   &&
      (sibling->right->colour == BLACK)) {
+
     sibling->colour = RED;
     node->parent->colour = BLACK;
   }
   else {
+		// The case was not violated, continue.
     removeCase5(node);
   }
 }
 
 template <typename K, typename T>
 void RBTree<K,T>::removeCase5(RBNode<K,T>* node) {
-/* Inputs: node - The node with violated RBTree properties to fix
- * Output: None
- *
- */
+	/* This case ensures that the right black depths are satisfied. If they are
+	 * not, then begin preformign rotations.
+	 */
 
   // Initialize the sibling
   RBNode<K,T>* sibling = getSibling(node);
 
-  // This if statement is trivial,since no red parent can have a red child
-  if(sibling->colour == BLACK) { //true == black
+  // This if statement is trivial, since no red parent can have a red child
+  if(sibling->colour == BLACK) {
+
     // The following statements force the red to be on the left of the left
-    // of the parent,or right of the right, so case six will rotate correctly
-    if((node == node->parent->left)      &&
+    // of the parent, or right of the right, so case six will rotate correctly
+    if((node == node->parent->left)       &&
        (sibling->right->colour == BLACK)  &&
-       (sibling->left->colour == RED)) { // this test is trivial due to cases 2-4
+       (sibling->left->colour == RED)) {
       sibling->colour = RED;
       sibling->left->colour = BLACK;
       rotateRight(sibling);
     }
-    else if((node == node->parent->right)      &&
+    else if((node == node->parent->right)       &&
             (sibling->left->colour == BLACK)    &&
-            (sibling->right->colour == RED)) { // this test is trivial due to cases 2-4
+            (sibling->right->colour == RED)) {
       sibling->colour = RED;
       sibling->right->colour = BLACK;
       rotateLeft(sibling);
     }
   }
+
+	// The case may or may not have completely fixed the tree, continue.
   removeCase6(node);
 }
 
 template <typename K, typename T>
 void RBTree<K,T>::removeCase6(RBNode<K,T>* node) {
-  /* Inputs: node - The node with violated RBTree properties to fix
-   * Output: None
-   *
+  /* This case ensures that the rotations of the previous case did not
+	 * violate the RBTree properties, and preforms the final rotations if
+	 * necessary.
    */
 
   // Initialize the sibling
   RBNode<K,T>* sibling = getSibling(node);
 
   sibling->colour = node->parent->colour;
-  node->parent->colour = BLACK; //true == black
+  node->parent->colour = BLACK;
 
   if(node == node->parent->left) {
-    sibling->right->colour = BLACK; //true == black
+    sibling->right->colour = BLACK;
     rotateLeft(node->parent);
   }
   else {
-    sibling->left->colour = BLACK; //true == black
+    sibling->left->colour = BLACK;
     rotateRight(node->parent);
   }
+
+	// There are no more ways to violate the RBTree properties.
 }
 
 template <typename K, typename T>

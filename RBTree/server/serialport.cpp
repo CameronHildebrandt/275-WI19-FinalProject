@@ -1,10 +1,13 @@
 // --------------------------------------------------------
-// | Name: Ramana Vasanthan, 1458497
 // | Name: Cameron Hildebrandt, 1584696
+// | Name: Ramana Vasanthan, 1458497
 // | CMPUT 275, Winter 2019
-// | Assignment #2, Part 2 - Driving Route Finder
+// | Final Project - Red-Black Tree Visualizer
 // --------------------------------------------------------
-// This file was not modified from the one provided on eClass.
+
+/* This file is not used in this implementation. It is necessary for
+ * communication with the arduino, which we were not able to fully implement.
+ */
 
 #include "serialport.h"
 #include <sys/types.h>

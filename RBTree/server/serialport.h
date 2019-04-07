@@ -1,3 +1,15 @@
+// --------------------------------------------------------
+// | Name: Cameron Hildebrandt, 1584696
+// | Name: Ramana Vasanthan, 1458497
+// | CMPUT 275, Winter 2019
+// | Final Project - Red-Black Tree Visualizer
+// --------------------------------------------------------
+
+/* This file is not used in this implementation. It is necessary for
+ * communication with the arduino, which we were not able to fully implement.
+ */
+
+
 /*
   Serial port class specifically set up for communication with Arduino Mega2560
   in the Ubuntu VM used in CMPUT 275

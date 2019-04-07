@@ -59,6 +59,7 @@ Assumptions:
 
 Program Functionality: NEEDS UPDATE
   RBTree:
+    This program builds off of the AVL trees from weekly exercise 7.
     This program was initially intended to display on the Arduino display,
     however, we were constrained by time and were not able to get the display
     working properly. Thus, the display parts that we had are still in the
@@ -67,9 +68,13 @@ Program Functionality: NEEDS UPDATE
     about what values to store and delete. The commands will be displayed
     once the program is first opened.
 
-    Since we were unable to implement this on the arduino, the output is
+    This program also has some error handling, such as if you input an invalid
+    command. If you input a number too large for the data structure "int" or
+    input non-number characters after an "I, R, or F" command, it will fail.
+
+    Since we were unable to implement this on the Arduino, the output is
     a text representation of the tree (that we were working on using for the
-    visuallizer). For example, the tree:
+    visualizer). For example, the tree:
 
                20(B)
          10(B)      30(B)
@@ -79,7 +84,7 @@ Program Functionality: NEEDS UPDATE
       20,1 10,1 1,0 R U R 15,0 R U U R 30,1 22,0 R U R 100,0 R U U U
 
     On a high level, this is printing the root node, then recursing down the
-    left brnach of the tree until it no longer can. Then, when it starts
+    left branch of the tree until it no longer can. Then, when it starts
     recursing up the left side, it begins recursing down each right child (an
     'R' is printed). Once it has explored the entire right sub tree, it
     recurses up and prints a 'U'. Each of the nodes is represented as the key
@@ -99,7 +104,7 @@ Running Instructions: NEEDS UPDATE
       - make clall - remove the executable too.
 
     To run this program, simply type "make" then "./RBTree". To continue
-    using the program, follow the onscreen isntructions.
+    using the program, follow the onscreen instructions.
 
   BinHeap:
     The Makefile targets are:
@@ -107,7 +112,7 @@ Running Instructions: NEEDS UPDATE
       ***TODO***
 
 Known Limitations:
-  - The visuallization of the red-black tree was not entirely fucntional, and
+  - The visualization of the red-black tree was not entirely functional, and
     thus had to be cut out for the presentation. The code for displaying the
     RBTree is still in the files, however it is simply commented out.
 
