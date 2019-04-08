@@ -2,15 +2,15 @@ CC=g++
 CFLAGS=-c -Wall -O2 -std=c++11
 LFLAGS=
 
-all: heapsort
-heapsort: heapsort.o
-	$(CC) heapsort.o -o heapsort $(LFLAGS)
-heapsort.o: heapsort.cpp heap.o serialport.o
-	$(CC) heapsort.cpp -o heapsort.o $(CFLAGS)
+all: server
+heapsort: server.o
+	$(CC) server.o -o heapsort $(LFLAGS)
+server.o: server.cpp heap.o serialport.o
+	$(CC) server.cpp -o server.o $(CFLAGS)
 heap.o:
 	$(CC) heap.h -o heap.o $(CFLAGS)
 serialport.o:
 	$(CC) serialport.h -o serialport.o $(CFLAGS)
 
 clean:
-	rm heapsort heapsort.o heap.o serialport.o
+	rm server server.o heap.o serialport.o

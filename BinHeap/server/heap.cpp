@@ -1,8 +1,8 @@
 // --------------------------------------------------------
-// | Name: Ramana Vasanthan, 1458497
 // | Name: Cameron Hildebrandt, 1584696
+// | Name: Ramana Vasanthan, 1458497
 // | CMPUT 275, Winter 2019
-// | Assignment #2, Part 2 - Driving Route Finder
+// | Final Project - Data Structure Visualizer
 // --------------------------------------------------------
 
 #include "heap.h"

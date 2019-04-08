@@ -2,29 +2,29 @@
 | Name: Cameron Hildebrandt, 1584696
 | Name: Ramana Vasanthan, 1458497
 | CMPUT 275, Winter 2019
-| Final Project - Red-Black Tree Visualizer
+| Final Project - Data Structure Visualizer
 --------------------------------------------------------
 
 
 Included Files:
   - BinHeap
-    - client.cpp (Arduino)
+    - client.cpp (Client)
     - heap.h
     - heap.cpp
     - heapsort.cpp
     - serialport.h
-    - serialport.cpp
-    - Makefile (Arduino)
+    - server.cpp
+    - Makefile (Client)
     - Makefile (Server)
 
   - RBTree
-    - client.cpp (Arduino)
+    - client.cpp (Client)
     - RBTreeAux.h
     - RBTree.h
     - RBTreeInterface
     - serialport.h
     - serialport.cpp
-    - Makefile (Arduino)
+    - Makefile (Client)
     - Makefile (Server)
 
 
@@ -49,6 +49,8 @@ Libraries Used:
   - Arduino.h
   - Adafruit_ILI9341.h
   - math.h
+  - serialport.h
+  - serialport.cpp
 
 
 Assumptions:
@@ -57,7 +59,7 @@ Assumptions:
   - The user has a basic understanding of the command line.
 
 
-Program Functionality: NEEDS UPDATE
+Program Functionality:
   RBTree:
     This program builds off of the AVL trees from weekly exercise 7.
     This program was initially intended to display on the Arduino display,
@@ -91,12 +93,13 @@ Program Functionality: NEEDS UPDATE
     of that node and the colour of that node (1 == Black, 0 == Red).
 
   BinHeap:
+  	This program uses the BinaryHeap class implemented in class. The server and client work properly together to display the Binary Heap on the Adafruit display. Once the client is uploaded to the Arduino, the server can be run. A handshake will take place confirming communication between the Arduino and the computer. The program will ask for a command from the computer. A command of "N" followed by an integer, n, will create a new tree with n elements. The program will prompt the user to input n elements to the binary heap. Once all the values are inputted, the server will send all the values to the Arduino which will then use the visualization algorithm to print the tree to the screen. Due to the screen size limitations, it is recommended to use 16 values or less. More can still be inputted if needed but the formatting will look off. "I" is used followed by an integer to input the given value to the binary heap. After inserting, the values are sent to the Arduino again to be printed. "P" is used to pop the minimum value from the binary heap, after which the values will be sent to the Arduino again to be printed.
+
+  	Heapsort was also implemented on the Arduino to sort the values in O(nlogn) time. THe values are sorted from lowest to greatest and displayed on the screen along with the runtime in microseconds.
 
 
-    ***TODO***
+Running Instructions:
 
-
-Running Instructions: NEEDS UPDATE
   RBTree:
     The Makefile targets are:
       - make (all) - compile all files to produce the executable "RBtree"
@@ -107,9 +110,13 @@ Running Instructions: NEEDS UPDATE
     using the program, follow the onscreen instructions.
 
   BinHeap:
+  	Server:
     The Makefile targets are:
 
-      ***TODO***
+    - make (all) - compile the necessary server files to make the executable "server"
+    - make clean - remove all the objects and executables
+
+    First, wire the Adafruit ILI9341 display to the Arduino acording to the "Wiring for Adafruit ILI9341" instructions on eClass. Then connect the Arduino to the oputer via USB cable. To run, type "make upload" in the client directory and then type "make" in the server directory followed by ./server to start the server.
 
 Known Limitations:
   - The visualization of the red-black tree was not entirely functional, and
@@ -117,10 +124,9 @@ Known Limitations:
     RBTree is still in the files, however it is simply commented out.
 
 
-Additional Notes:
-  - ?????
-
-
 References:
   - Red Black Tree - https://en.wikipedia.org/wiki/Red–black_tree
   - WE7 Files - https://eclass.srv.ualberta.ca/mod/resource/view.php?id=3507236
+  - Binary Heap Documentation - Lecture 17 Class Notes
+  - HeapSort - https://www.geeksforgeeks.org/heap-sort/
+  - Serial Port files - Assignent 2 files on eClass
